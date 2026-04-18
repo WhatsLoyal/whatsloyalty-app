@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1600, initial-scale=1"/>
+<title>WhatsLoyalty · Demo conectado end-to-end</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --paper:#F6F5F0; --paper2:#ECEAE1; --paper3:#E0DCCD;
+    --ink:#0A0F0C; --ink3:#3d4540; --ink4:#6b7570;
+    --line:#dcd9cc; --green:#00C851; --greenDeep:#00a843; --greenDark:#04200f;
+    --amber:#E0A330; --red:#E55A4B; --waGreen:#008069; --waDoodle:#E5DDD5;
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; background:var(--paper); font-family:"Inter Tight",system-ui,sans-serif; color:var(--ink); min-height:100vh; }
+  body { display:flex; flex-direction:column; }
+
+  .hdr { padding:20px 24px 10px; display:flex; align-items:center; justify-content:space-between; max-width:1680px; margin:0 auto; width:100%; }
+  .logo { display:flex; align-items:center; gap:10px; }
+  .logo-mark { width:32px; height:32px; border-radius:9px; background:var(--ink); color:var(--green); display:grid; place-items:center; font-weight:700; font-size:16px; }
+  .logo-word { font-family:"Instrument Serif"; font-size:24px; letter-spacing:-.01em; }
+  .logo-word em { font-style:italic; color:var(--greenDeep); }
+  .hdr .sub { font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.14em; color:var(--ink4); text-transform:uppercase; margin-top:3px; }
+  .live { display:flex; align-items:center; gap:8px; padding:6px 12px; border-radius:100px; background:var(--ink); color:var(--green); font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.12em; }
+  .live .dot { width:7px; height:7px; border-radius:50%; background:var(--green); animation:blink 1.3s infinite; }
+
+  /* Main grid: 3 phones + console below */
+  .stage { flex:1; display:grid; grid-template-columns: 1fr 1fr 1.35fr; gap:24px; padding:12px 24px 24px; max-width:1680px; margin:0 auto; width:100%; }
+  .col { display:flex; flex-direction:column; }
+  .col-label { font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.14em; color:var(--ink4); text-transform:uppercase; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+  .col-label .num { width:18px; height:18px; border-radius:6px; background:var(--ink); color:var(--green); display:grid; place-items:center; font-size:10px; font-weight:600; letter-spacing:0; }
+
+  /* Phone */
+  .phone-wrap { display:flex; justify-content:center; }
+  .phone-frame { width:340px; height:720px; border-radius:46px; background:#0a0f0c; position:relative; padding:10px; box-shadow:0 24px 50px rgba(10,15,12,.2), 0 0 0 1.5px rgba(10,15,12,.1); }
+  .phone-screen { width:100%; height:100%; border-radius:38px; overflow:hidden; position:relative; background:#fff; }
+  .phone-island { position:absolute; top:19px; left:50%; transform:translateX(-50%); width:100px; height:30px; border-radius:24px; background:#000; z-index:50; }
+
+  /* Dashboard col */
+  .dash { background:#fff; border:1px solid var(--line); border-radius:20px; padding:18px; min-height:720px; display:flex; flex-direction:column; }
+
+  /* Console bottom */
+  .console { position:fixed; left:0; right:0; bottom:0; background:var(--ink); color:#fff; padding:14px 24px; display:flex; align-items:center; gap:12px; z-index:200; border-top:2px solid var(--green); flex-wrap:wrap; }
+  .console .label { font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.14em; color:var(--green); text-transform:uppercase; }
+  .console .btn { padding:9px 14px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:#fff; font-family:"Inter Tight"; font-size:12.5px; font-weight:500; cursor:pointer; display:flex; align-items:center; gap:6px; }
+  .console .btn:hover { background:rgba(255,255,255,.15); }
+  .console .btn.primary { background:var(--green); color:var(--greenDark); border-color:var(--green); font-weight:600; }
+  .console .btn.danger { background:transparent; color:#ff9a8a; border-color:rgba(255,100,80,.3); margin-left:auto; }
+  .console .divider { width:1px; height:22px; background:rgba(255,255,255,.15); }
+
+  /* Modal */
+  .modal-bg { position:fixed; inset:0; background:rgba(10,15,12,.6); backdrop-filter:blur(4px); display:none; align-items:center; justify-content:center; z-index:400; }
+  .modal-bg.on { display:flex; }
+  .modal { background:var(--paper); border-radius:20px; padding:24px; width:420px; box-shadow:0 30px 60px rgba(0,0,0,.3); }
+  .modal h3 { margin:0 0 4px; font-family:"Instrument Serif"; font-size:28px; font-weight:400; letter-spacing:-.02em; }
+  .modal h3 em { font-style:italic; color:var(--greenDeep); }
+  .modal .m-sub { font-size:13px; color:var(--ink4); margin-bottom:16px; }
+  .modal input { width:100%; padding:12px 14px; border-radius:11px; border:1px solid var(--line); background:#fff; font-family:"Inter Tight"; font-size:14px; margin-bottom:10px; }
+  .modal input:focus { outline:none; border-color:var(--ink); }
+  .modal .m-row { display:flex; gap:8px; margin-top:14px; }
+  .modal .m-row button { flex:1; padding:12px; border-radius:11px; border:none; font-family:"Inter Tight"; font-size:13.5px; font-weight:600; cursor:pointer; }
+  .modal .cancel { background:#fff; border:1px solid var(--line); color:var(--ink3); }
+  .modal .go { background:var(--green); color:var(--greenDark); }
+
+  /* Event toast */
+  .toast { position:fixed; top:20px; right:20px; background:var(--ink); color:#fff; padding:12px 16px; border-radius:12px; font-size:13px; z-index:500; box-shadow:0 10px 30px rgba(0,0,0,.3); border-left:3px solid var(--green); animation:toastIn .3s; max-width:320px; }
+  .toast .t-label { font-family:"JetBrains Mono"; font-size:9.5px; letter-spacing:.14em; color:var(--green); margin-bottom:2px; }
+
+  @keyframes blink { 50% { opacity:.4; } }
+  @keyframes toastIn { from { transform:translateX(20px); opacity:0; } }
+
+  body { padding-bottom:76px; }
+
+  /* Empty state */
+  .empty { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:40px 20px; text-align:center; color:var(--ink4); }
+  .empty .big { font-family:"Instrument Serif"; font-size:32px; color:var(--ink); letter-spacing:-.02em; margin-bottom:6px; }
+  .empty .big em { font-style:italic; color:var(--greenDeep); }
+  .empty .sm { font-size:13px; line-height:1.5; max-width:260px; }
+  .empty .arrow { font-size:28px; margin-top:16px; animation:bounce 1.8s infinite; color:var(--greenDeep); }
+  @keyframes bounce { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(6px); } }
+
+  /* Dash inner */
+  .dash-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid var(--line); }
+  .dash-hdr .ttl { font-family:"Instrument Serif"; font-size:22px; letter-spacing:-.01em; }
+  .kpi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+  .kpi { background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:12px; }
+  .kpi .l { font-family:"JetBrains Mono"; font-size:9.5px; letter-spacing:.12em; color:var(--ink4); margin-bottom:4px; }
+  .kpi .v { font-family:"Instrument Serif"; font-size:30px; letter-spacing:-.01em; line-height:1; }
+  .kpi .v em { font-style:italic; color:var(--greenDeep); font-size:15px; }
+
+  .cust-list { flex:1; overflow-y:auto; border:1px solid var(--line); border-radius:12px; background:var(--paper); }
+  .cust-row { padding:10px 12px; border-bottom:1px solid var(--line); display:grid; grid-template-columns:auto 1fr auto auto; gap:10px; align-items:center; cursor:pointer; transition:background .1s; }
+  .cust-row:last-child { border-bottom:none; }
+  .cust-row:hover { background:#fff; }
+  .cust-row.active { background:#fff; box-shadow:inset 3px 0 0 var(--green); }
+  .cust-row .av { width:32px; height:32px; border-radius:50%; background:var(--greenDeep); color:#fff; font-family:"JetBrains Mono"; font-size:10px; font-weight:600; display:grid; place-items:center; }
+  .cust-row .n { font-size:13px; font-weight:500; }
+  .cust-row .sub { font-family:"JetBrains Mono"; font-size:9.5px; color:var(--ink4); margin-top:2px; }
+  .cust-row .pts { font-family:"Instrument Serif"; font-size:22px; color:var(--greenDeep); letter-spacing:-.01em; }
+  .cust-row .scan-btn { padding:6px 10px; border-radius:8px; background:var(--ink); color:#fff; border:none; font-size:11px; font-family:"Inter Tight"; font-weight:500; cursor:pointer; }
+
+  .ev-feed { margin-top:14px; border-top:1px dashed var(--line); padding-top:12px; max-height:180px; overflow-y:auto; }
+  .ev-feed .ev-label { font-family:"JetBrains Mono"; font-size:10px; letter-spacing:.12em; color:var(--ink4); margin-bottom:8px; }
+  .ev { font-family:"JetBrains Mono"; font-size:10.5px; color:var(--ink3); padding:4px 0; border-bottom:1px solid var(--line); display:flex; gap:8px; }
+  .ev .t { color:var(--ink4); flex-shrink:0; }
+  .ev .k { color:var(--greenDeep); font-weight:500; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="logo">
+      <div class="logo-mark">W</div>
+      <div>
+        <div class="logo-word">Whats<em>Loyalty</em> · Demo end-to-end</div>
+        <div class="sub">Cliente · Staff · Dashboard · conectados en vivo</div>
+      </div>
+    </div>
+  </div>
+  <div class="live"><div class="dot"></div> ● En vivo · localStorage DB</div>
+</div>
+
+<div class="stage">
+  <!-- Col 1: Client phone -->
+  <div class="col">
+    <div class="col-label"><span class="num">1</span> Móvil del cliente · WhatsApp</div>
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="phone-screen" id="client-screen"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Col 2: Staff phone -->
+  <div class="col">
+    <div class="col-label"><span class="num">2</span> Móvil del staff · App WhatsLoyalty</div>
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-island"></div>
+        <div class="phone-screen" id="staff-screen"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Col 3: Dashboard -->
+  <div class="col">
+    <div class="col-label"><span class="num">3</span> Dashboard del negocio · web</div>
+    <div class="dash" id="dash"></div>
+  </div>
+</div>
+
+<!-- Console -->
+<div class="console">
+  <span class="label">● Consola demo</span>
+  <button class="btn primary" id="btn-new">📱 Simular: cliente escanea QR del local</button>
+  <div class="divider"></div>
+  <span class="label" style="color:rgba(255,255,255,.5);">Cliente activo</span>
+  <select id="active-select" style="padding:8px 10px; border-radius:9px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:#fff; font-family:'Inter Tight'; font-size:12.5px; cursor:pointer;"></select>
+  <div class="divider"></div>
+  <button class="btn" id="btn-simulate">⚡ Simular: venta 25€</button>
+  <button class="btn" id="btn-redeem">🎁 Cliente pulsa "Canjear" en WhatsApp</button>
+  <button class="btn danger" id="btn-reset">Reiniciar demo</button>
+</div>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3>El cliente <em>se apunta</em></h3>
+    <div class="m-sub">Escaneó el QR del local y WhatsApp se abrió pre-rellenado. Al enviar el mensaje, el sistema le da de alta automáticamente y le manda bienvenida + QR personal + 50 pts.</div>
+    <input id="inp-name" placeholder="Nombre y apellido" autocomplete="off"/>
+    <input id="inp-phone" placeholder="+34 600 000 000" autocomplete="off"/>
+    <div class="m-row">
+      <button class="cancel" onclick="closeModal()">Cancelar</button>
+      <button class="go" id="btn-create">Enviar "ALTA · CAFÉ MORENO"</button>
+    </div>
+  </div>
+</div>
+
+<!-- Data layer -->
+<script src="wl-db.js?v=2"></script>
+
+<!-- React -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="demo-views.jsx?v=2"></script>
+
+<script type="text/babel">
+  // Modal + console wiring
+  const modal = document.getElementById('modal-bg');
+  document.getElementById('btn-new').onclick = () => { modal.classList.add('on'); document.getElementById('inp-name').focus(); };
+  window.closeModal = () => modal.classList.remove('on');
+  modal.onclick = e => { if (e.target === modal) closeModal(); };
+
+  document.getElementById('btn-create').onclick = () => {
+    const name = document.getElementById('inp-name').value.trim();
+    const phone = document.getElementById('inp-phone').value.trim() || '+34 600 000 000';
+    if (!name) { document.getElementById('inp-name').focus(); return; }
+    const c = WLDB.selfRegister({ name, phone });
+    document.getElementById('inp-name').value = '';
+    document.getElementById('inp-phone').value = '';
+    closeModal();
+    toast('NUEVO CLIENTE', name + ' · +50 pts de bienvenida');
+  };
+
+  document.getElementById('btn-reset').onclick = () => {
+    if (confirm('¿Reiniciar la demo? Se perderán todos los clientes.')) WLDB.reset();
+  };
+
+  document.getElementById('btn-simulate').onclick = () => {
+    const db = WLDB.get();
+    if (!db.activeCustomerId) { toast('NO HAY CLIENTE', 'Da de alta uno primero'); return; }
+    const r = WLDB.addSale(db.activeCustomerId, 25);
+    toast('+'+r.pts+' PTS', 'Venta de 25€ registrada');
+  };
+
+  document.getElementById('btn-redeem').onclick = () => {
+    const db = WLDB.get();
+    if (!db.activeCustomerId) { toast('NO HAY CLIENTE', 'Da de alta uno primero'); return; }
+    const r = WLDB.requestRedeem(db.activeCustomerId);
+    if (r) toast('QR DE CANJE ENVIADO', 'Caduca en 5 min · código '+r.token);
+  };
+
+  document.getElementById('active-select').onchange = e => WLDB.setActiveCustomer(e.target.value);
+
+  function toast(label, msg) {
+    const t = document.createElement('div');
+    t.className = 'toast';
+    t.innerHTML = `<div class="t-label">${label}</div>${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; t.style.transition='.3s'; setTimeout(()=>t.remove(), 300); }, 2800);
+  }
+  window.wlToast = toast;
+
+  // Mount 3 React roots
+  const clientRoot = ReactDOM.createRoot(document.getElementById('client-screen'));
+  const staffRoot  = ReactDOM.createRoot(document.getElementById('staff-screen'));
+  const dashRoot   = ReactDOM.createRoot(document.getElementById('dash'));
+
+  function render(db) {
+    clientRoot.render(<ClientView db={db}/>);
+    staffRoot.render(<StaffView db={db}/>);
+    dashRoot.render(<DashView db={db}/>);
+
+    // Active customer select
+    const sel = document.getElementById('active-select');
+    const cur = sel.value;
+    sel.innerHTML = '';
+    if (!db.customers.length) {
+      const opt = document.createElement('option');
+      opt.textContent = '— ninguno —';
+      opt.disabled = true;
+      sel.appendChild(opt);
+    } else {
+      db.customers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id; opt.textContent = c.name + ' · ' + c.pts + ' pts';
+        if (c.id === db.activeCustomerId) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+  }
+
+  WLDB.subscribe(render);
+</script>
+
+</body>
+</html>

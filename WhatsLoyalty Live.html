@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WhatsLoyalty · Demo en vivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="wl-config.js"></script>
+<script src="wl-data.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --paper:#F6F5F0; --paper2:#ECEAE1; --paper3:#E0DCCD;
+    --ink:#0A0F0C; --ink3:#3d4540; --ink4:#6b7570;
+    --line:#dcd9cc; --green:#00C851; --greenDeep:#00a843;
+  }
+  html,body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  body{min-height:100vh}
+  .serif{font-family:'Instrument Serif',serif}
+  .mono{font-family:'JetBrains Mono',monospace}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit;cursor:pointer;background:none;border:none;color:inherit}
+  .topbar{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line);padding:14px 32px;display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand-mark{width:28px;height:28px;border-radius:7px;background:var(--ink);display:grid;place-items:center;position:relative}
+  .brand-mark::after{content:"";position:absolute;width:7px;height:7px;background:var(--green);border-radius:50%;bottom:4px;right:4px;box-shadow:0 0 0 2px var(--ink)}
+  .brand-mark svg{width:16px;height:16px;stroke:var(--paper);stroke-width:2;fill:none}
+  .brand-name{font-weight:700;font-size:15px;letter-spacing:-.01em}
+  .brand-name span{color:var(--ink4);font-weight:400}
+  .topbar-right{display:flex;gap:18px;align-items:center}
+  .topbar-meta{font-size:11px;color:var(--ink4);display:flex;gap:14px}
+  .topbar-meta .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:5px;vertical-align:middle;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+  .btn-reset{background:none;border:1px solid var(--line);padding:6px 12px;font:inherit;font-size:11px;color:var(--ink4);border-radius:6px;cursor:pointer}
+  .btn-reset:hover{border-color:var(--ink);color:var(--ink)}
+  .hero{max-width:1280px;margin:0 auto;padding:72px 32px 48px;display:grid;grid-template-columns:1.2fr 1fr;gap:64px;align-items:end}
+  .hero-kicker{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink4);margin-bottom:24px}
+  .hero-kicker::before{content:"";width:24px;height:1px;background:var(--ink3)}
+  h1.hero-title{font-family:'Instrument Serif',serif;font-weight:400;font-size:clamp(52px,7vw,96px);line-height:.95;letter-spacing:-.025em;margin-bottom:24px}
+  h1.hero-title em{font-style:italic;color:var(--greenDeep)}
+  .hero-lede{font-size:17px;line-height:1.55;color:var(--ink3);max-width:52ch}
+  .hero-meta{border-top:1px solid var(--line);padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:28px}
+  .hero-meta-item .k{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin-bottom:6px}
+  .hero-meta-item .v{font-size:14px;line-height:1.4}
+  .hero-meta-item .v b{font-weight:600}
+  .section{max-width:1280px;margin:0 auto;padding:0 32px}
+  .section-label{display:grid;grid-template-columns:40px 1fr auto;gap:20px;align-items:baseline;padding:40px 0 20px;border-bottom:1px solid var(--line);margin-bottom:32px}
+  .section-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink4)}
+  .section-title{font-family:'Instrument Serif',serif;font-size:36px;letter-spacing:-.02em}
+  .section-meta{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4)}
+  .biz-grid{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper2)}
+  .biz-card{background:var(--paper);padding:28px 24px;display:flex;flex-direction:column;gap:18px;border-right:1px solid var(--line)}
+  .biz-card:last-child{border-right:none}
+  .biz-card:hover{background:#FAF9F4}
+  .biz-head{display:flex;justify-content:space-between;align-items:start;gap:8px}
+  .biz-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink4)}
+  .biz-sector{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);padding:3px 8px;border:1px solid var(--line);border-radius:4px}
+  .biz-name{font-family:'Instrument Serif',serif;font-size:30px;line-height:1;letter-spacing:-.015em;margin-top:8px}
+  .biz-address{font-size:12px;color:var(--ink4);line-height:1.4;margin-top:4px}
+  .biz-stats{margin-top:auto;padding-top:16px;border-top:1px dashed var(--line);display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .biz-stat .k{font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);margin-bottom:3px}
+  .biz-stat .v{font-size:18px;font-weight:600;letter-spacing:-.01em}
+  .biz-stat .v em{font-style:normal;color:var(--greenDeep);font-weight:500}
+  .biz-links{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--line)}
+  .biz-link{padding:10px 8px;font-size:11px;text-align:center;color:var(--ink3);border-right:1px solid var(--line);cursor:pointer}
+  .biz-link:last-child{border-right:none}
+  .biz-link:hover{background:var(--ink);color:var(--paper)}
+  .surfaces{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .surface{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:all .2s}
+  .surface:hover{border-color:var(--ink);transform:translateY(-2px)}
+  .surface-head{display:flex;justify-content:space-between;align-items:start}
+  .surface-icon{width:36px;height:36px;border-radius:8px;background:var(--paper2);display:grid;place-items:center}
+  .surface-icon svg{width:18px;height:18px;stroke:var(--ink);stroke-width:1.5;fill:none}
+  .surface-num{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--ink4)}
+  .surface-name{font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-.01em;line-height:1.1}
+  .surface-desc{font-size:12px;color:var(--ink4);line-height:1.5}
+  .surface-cta{font-size:11px;color:var(--greenDeep);font-weight:500;margin-top:auto}
+  .surface-cta::after{content:" →";transition:transform .2s;display:inline-block}
+  .surface:hover .surface-cta::after{transform:translateX(3px)}
+  footer{max-width:1280px;margin:64px auto 0;padding:64px 32px 32px;display:grid;grid-template-columns:1fr auto;gap:32px;border-top:1px solid var(--line)}
+  .foot-note{font-size:11px;color:var(--ink4);line-height:1.6;max-width:60ch}
+  .foot-meta{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink4);text-align:right;line-height:1.8}
+  @media(max-width:960px){.hero{grid-template-columns:1fr;gap:32px}.biz-grid{grid-template-columns:1fr 1fr;border:none;background:transparent}.biz-card{border:1px solid var(--line);border-radius:12px;margin-bottom:12px}.surfaces{grid-template-columns:1fr 1fr}}
+  .surface-intro{max-width:640px;margin:0 auto 28px;text-align:center}
+  .surface-intro .pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--greenDeep);padding:4px 10px;border:1px solid var(--greenDeep);border-radius:99px;margin-bottom:12px}
+  .surface-intro p{font-size:15px;color:var(--ink3);line-height:1.6}
+  .surface-intro strong{color:var(--ink);font-weight:600}
+  .surface-featured{background:#F7F1E5;border-color:var(--greenDeep)!important;position:relative}
+  .surface-featured::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--greenDeep);border-radius:12px 12px 0 0}
+  .surface-featured .surface-icon{background:var(--greenDeep);color:var(--paper)}
+  .surface-featured .surface-icon svg{stroke:var(--paper);fill:var(--paper)}
+  /* Picker modal */
+  .picker-bg{position:fixed;inset:0;background:rgba(10,15,12,.6);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;z-index:200;padding:24px}
+  .picker-bg.on{display:flex}
+  .picker-card{background:var(--paper);border-radius:18px;width:100%;max-width:440px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.3)}
+  .picker-head{padding:22px 24px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .picker-head h3{font-family:'Instrument Serif',serif;font-size:24px;letter-spacing:-.01em;line-height:1.2}
+  .picker-close{font-size:22px;color:var(--ink4);padding:4px 8px;cursor:pointer;background:none;border:none}
+  .picker-list{padding:8px}
+  .picker-item{width:100%;padding:14px;display:flex;gap:14px;align-items:center;border-radius:10px;cursor:pointer;border:none;background:transparent;text-align:left;transition:background .15s}
+  .picker-item:hover{background:var(--paper2)}
+  .picker-mark{width:42px;height:42px;border-radius:10px;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:16px;flex-shrink:0;font-family:'Instrument Serif',serif}
+  .picker-info{flex:1;min-width:0}
+  .picker-name{font-size:14px;font-weight:600;color:var(--ink)}
+  .picker-tag{font-size:11px;color:var(--ink4);margin-top:2px}
+  .picker-arrow{font-size:18px;color:var(--ink4)}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 6h12M4 12h8M4 18h14"/></svg></div>
+    <div class="brand-name">WhatsLoyalty <span>/ Live demo</span></div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-meta">
+      <span><span class="dot"></span>Datos simulados · persistentes</span>
+      <span class="mono" id="tbMeta">5 pilotos</span>
+    </div>
+    <button class="btn-reset" onclick="WL.db.reset();location.reload()">Reiniciar demo</button>
+  </div>
+</div>
+
+<section class="hero">
+  <div>
+    <div class="hero-kicker">Producto · piloto Gipuzkoa · Q1 2026</div>
+    <h1 class="hero-title">Fidelización<br>por <em>WhatsApp</em>,<br>sin app.</h1>
+  </div>
+  <div>
+    <p class="hero-lede">Cinco negocios piloto, un mismo sistema. El cliente escanea un QR, recibe la bienvenida por WhatsApp y empieza a acumular. El comercio apunta la venta desde el móvil. Nada más.</p>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><div class="k">Tech stack</div><div class="v"><b>Google Sheets</b> · Make · Twilio · Vercel</div></div>
+      <div class="hero-meta-item"><div class="k">Coste mensual por negocio</div><div class="v"><b>39 €</b> · sin setup</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-label">
+    <div class="section-num">01</div>
+    <div class="section-title">Los cinco pilotos</div>
+    <div class="section-meta">Sectores distintos · misma plataforma</div>
+  </div>
+  <div class="biz-grid" id="bizGrid"></div>
+</section>
+
+<section class="section">
+  <div class="section-label">
+    <div class="section-num">02</div>
+    <div class="section-title">Qué ves en la demo</div>
+    <div class="section-meta">Cuatro superficies del producto</div>
+  </div>
+  <div class="surface-intro">
+    <span class="pill">Recorrido</span>
+    <p>El cliente escanea el <strong>QR del local</strong> (pegado en la mesa, la barra o la puerta) y en 28 segundos está dentro.
+    A partir de ahí, cada visita el camarero le carga puntos y el cliente los canjea cuando quiere.</p>
+  </div>
+  <div class="surfaces">
+    <div class="surface surface-featured" onclick="pickBizFor('onboarding')">
+      <div class="surface-head">
+        <div class="surface-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14h1v1h-1zM14 20h1v1h-1zM17 17h4v4h-4z"/></svg></div>
+        <div class="surface-num">01 · Entrada</div>
+      </div>
+      <div class="surface-name">QR del local → alta del cliente</div>
+      <div class="surface-desc">Lo que ve el cliente cuando escanea el QR de la mesa: formulario corto, confirmación en WhatsApp y rasca de bienvenida. 28 segundos.</div>
+      <div class="surface-cta">Escanear QR</div>
+    </div>
+    <div class="surface" onclick="pickBizFor('staff')">
+      <div class="surface-head"><div class="surface-icon"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/></svg></div><div class="surface-num">02 · Cada visita</div></div>
+      <div class="surface-name">App de barra / caja</div>
+      <div class="surface-desc">El camarero busca al cliente por teléfono y apunta la venta en 3 toques. Los puntos le llegan al cliente al instante.</div>
+      <div class="surface-cta">Abrir staff</div>
+    </div>
+    <div class="surface" onclick="pickBizFor('cliente')">
+      <div class="surface-head"><div class="surface-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 22c0-4 4-7 8-7s8 3 8 7"/></svg></div><div class="surface-num">03 · Su tarjeta</div></div>
+      <div class="surface-name">Vista del cliente</div>
+      <div class="surface-desc">Saldo, premios, rasca de bienvenida, ruleta cada 5 visitas y reseñas. Lo que el cliente abre desde WhatsApp.</div>
+      <div class="surface-cta">Abrir tarjeta</div>
+    </div>
+    <div class="surface" onclick="pickBizFor('dashboard')">
+      <div class="surface-head"><div class="surface-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div><div class="surface-num">04 · Para el dueño</div></div>
+      <div class="surface-name">Dashboard del negocio</div>
+      <div class="surface-desc">Clientes, ventas de la semana, canjes pendientes y alertas de dormidos.</div>
+      <div class="surface-cta">Abrir panel</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-note">Esta es una demostración ejecutable. Los datos viven en el navegador (localStorage) y puedes reiniciarlos con el botón de cabecera.</div>
+  <div class="foot-meta">WhatsLoyalty<br>Pilot · Donostia–Irun · 2026</div>
+</footer>
+
+<script>
+(function(){
+  WL.db.init();
+  const totalCustomers = WL.BUSINESSES.reduce((s,b) => s + WL.db.getCustomers(b.id).length, 0);
+  document.getElementById('tbMeta').textContent = `${WL.BUSINESSES.length} pilotos · ${totalCustomers} clientes`;
+
+  const sectorLabels = { tasca:'Tasca', dental:'Dental', moda:'Moda', infantil:'Moda infantil', podologia:'Podología' };
+  document.getElementById('bizGrid').innerHTML = WL.BUSINESSES.map((b, i) => {
+    const stats = WL.db.getStats(b.id);
+    const num = String(i+1).padStart(2,'0');
+    return `
+      <div class="biz-card">
+        <div class="biz-head"><div class="biz-num">${num}</div><div class="biz-sector">${sectorLabels[b.sector]||b.sector}</div></div>
+        <div><div class="biz-name">${b.name}</div><div class="biz-address">${b.city} · ${b.address}</div></div>
+        <div class="biz-stats">
+          <div class="biz-stat"><div class="k">Clientes</div><div class="v">${stats.total_customers}</div></div>
+          <div class="biz-stat"><div class="k">Semana</div><div class="v"><em>+${stats.new_this_week}</em></div></div>
+        </div>
+        <div class="biz-links">
+          <button class="biz-link" onclick="location.href='WL Dashboard.html?b=${b.id}'">Panel</button>
+          <button class="biz-link" onclick="location.href='WL Staff.html?b=${b.id}'">Staff</button>
+          <button class="biz-link" onclick="location.href='WL Cliente.html?b=${b.id}'">Cliente</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  const SURFACE_MAP = { dashboard:'WL Dashboard.html', staff:'WL Staff.html', cliente:'WL Cliente.html', onboarding:'WL Onboarding.html' };
+  const SURFACE_LABEL = { dashboard:'Dashboard', staff:'App Staff', cliente:'Vista Cliente', onboarding:'Onboarding' };
+  let curSurface = null;
+
+  window.pickBizFor = function(surface) {
+    curSurface = surface;
+    document.getElementById('pickerTitle').textContent = '¿Qué negocio? · ' + SURFACE_LABEL[surface];
+    const list = document.getElementById('pickerList');
+    list.innerHTML = WL.BUSINESSES.map(b => `
+      <button class="picker-item" onclick="goToSurface('${b.id}')">
+        <div class="picker-mark">${b.name[0]}</div>
+        <div class="picker-info"><div class="picker-name">${b.name}</div><div class="picker-tag">${b.tagline}</div></div>
+        <div class="picker-arrow">→</div>
+      </button>`).join('');
+    document.getElementById('pickerModal').classList.add('on');
+  };
+  window.goToSurface = function(bizId) {
+    location.href = `${SURFACE_MAP[curSurface]}?b=${bizId}`;
+  };
+  window.closePicker = function() {
+    document.getElementById('pickerModal').classList.remove('on');
+  };
+})();
+</script>
+<!-- Picker modal -->
+<div class="picker-bg" id="pickerModal" onclick="if(event.target===this)closePicker()">
+  <div class="picker-card">
+    <div class="picker-head">
+      <h3 id="pickerTitle">¿Qué negocio?</h3>
+      <button class="picker-close" onclick="closePicker()">×</button>
+    </div>
+    <div class="picker-list" id="pickerList"></div>
+  </div>
+</div>
+
+</body>
+</html>

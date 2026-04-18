@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsLoyalty — Dashboard · Café Moreno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#00C851; --green-deep:#00a843; --green-soft:#7EE2A8; --green-wash:#e8fdf0; --green-deep-bg:#0F2E1E;
+  --ink:#0A0F0C; --ink-2:#1a201c; --ink-3:#3d4540; --ink-4:#6b7570; --ink-5:#9aa39e;
+  --paper:#F6F5F0; --paper-2:#ECEAE1; --paper-3:#E0DCCD; --line:#dcd9cc; --line-2:#c8c4b3;
+  --red:#E55A4B; --amber:#E0A330; --blue:#4A7A8C;
+  --serif:'Instrument Serif','Times New Roman',serif;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img,svg{display:block;max-width:100%}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.side{background:var(--paper-2);border-right:1px solid var(--line);padding:22px 18px;display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.main{min-width:0;display:flex;flex-direction:column}
+
+/* ── SIDEBAR ── */
+.brand{display:flex;align-items:center;gap:10px;padding:6px 8px 20px;border-bottom:1px solid var(--line);margin-bottom:14px;font-family:var(--serif);font-size:22px;letter-spacing:-.01em}
+.brand-mark{width:26px;height:26px;border-radius:7px;background:var(--green);display:grid;place-items:center;color:#04200f;font-family:var(--sans);font-weight:700;font-size:14px}
+.brand em{font-style:italic;color:var(--green-deep)}
+
+.biz{display:flex;align-items:center;gap:10px;padding:10px;background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:18px}
+.biz .av{width:36px;height:36px;border-radius:8px;background:#3d4540;color:var(--green);display:grid;place-items:center;font-size:16px;font-weight:700;flex-shrink:0}
+.biz .name{font-weight:500;font-size:13px;line-height:1.1}
+.biz .sub{font-size:11px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.04em}
+.biz .caret{margin-left:auto;color:var(--ink-4);font-size:10px}
+
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);padding:8px 10px 6px}
+.nav a{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;font-size:13.5px;color:var(--ink-3);transition:background .15s, color .15s;position:relative}
+.nav a:hover{background:rgba(10,15,12,.05);color:var(--ink)}
+.nav a.active{background:var(--ink);color:var(--paper)}
+.nav a.active .ic{color:var(--green)}
+.nav a .ic{width:16px;display:inline-flex;justify-content:center;color:var(--ink-4);font-family:var(--serif);font-style:italic;font-size:15px}
+.nav a .badge{margin-left:auto;background:var(--green);color:#04200f;font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:100px;font-weight:500}
+.nav a.active .badge{background:var(--green)}
+
+.side-bottom{margin-top:auto;padding-top:14px;border-top:1px solid var(--line)}
+.trial{background:var(--green-deep-bg);color:#fff;border-radius:12px;padding:14px;font-size:12px;line-height:1.4;position:relative;overflow:hidden}
+.trial::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 80% 0%, rgba(0,200,81,.25), transparent 60%);pointer-events:none}
+.trial b{font-family:var(--serif);font-size:18px;font-weight:400;display:block;margin-bottom:4px}
+.trial b em{font-style:italic;color:var(--green)}
+.trial a{color:var(--green);text-decoration:underline;text-underline-offset:2px;font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;display:inline-block;margin-top:8px}
+
+/* ── TOPBAR ── */
+.top{position:sticky;top:0;background:rgba(246,245,240,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:16px 32px;display:flex;align-items:center;gap:20px;z-index:40}
+.crumbs{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-4)}
+.crumbs span{color:var(--ink)}
+.search{margin-left:auto;display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:100px;padding:8px 16px;width:320px;font-size:13px;color:var(--ink-4)}
+.search kbd{margin-left:auto;background:var(--paper-2);border:1px solid var(--line);border-radius:4px;padding:1px 6px;font-family:var(--mono);font-size:10px;color:var(--ink-3)}
+.top-btn{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:100px;border:1px solid var(--line);background:#fff;font-size:13px;color:var(--ink-3);font-weight:500}
+.top-btn:hover{border-color:var(--ink);color:var(--ink)}
+.top-btn.dark{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.top .bell{width:34px;height:34px;border-radius:50%;background:#fff;border:1px solid var(--line);display:grid;place-items:center;color:var(--ink-3);font-size:14px;position:relative}
+.top .bell::after{content:'';position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--red);border:2px solid #fff}
+
+/* ── PAGE BASE ── */
+.page{padding:24px 32px 80px;display:none}
+.page.visible{display:block}
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin-bottom:24px;flex-wrap:wrap}
+.page-head .eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:6px}
+.page-head .eyebrow .dot{color:var(--green)}
+.page-head h1{font-family:var(--serif);font-size:52px;line-height:1;letter-spacing:-.02em;font-weight:400}
+.page-head h1 em{font-style:italic;color:var(--green-deep)}
+.page-head p.sub{font-size:14px;color:var(--ink-3);margin-top:8px;max-width:560px}
+
+/* ── VARIATION SELECTOR (Home only) ── */
+.var-sel{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:100px;padding:4px;gap:2px}
+.var-sel button{padding:7px 14px;border-radius:100px;font-size:12.5px;color:var(--ink-4);font-weight:500;transition:all .15s}
+.var-sel button.active{background:var(--ink);color:var(--paper)}
+.var-sel button:not(.active):hover{color:var(--ink)}
+
+.variant{display:none}
+.variant.visible{display:block}
+
+/* ── CARDS / KPI ── */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+.card h3{font-family:var(--serif);font-size:24px;font-weight:400;letter-spacing:-.01em;line-height:1.1}
+.card h3 em{font-style:italic;color:var(--green-deep)}
+.card .ttl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card .ttl .dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block}
+
+.kpi{padding:22px}
+.kpi .v{font-family:var(--serif);font-size:54px;line-height:.95;font-weight:400;letter-spacing:-.02em;margin:6px 0 4px}
+.kpi .v sup{font-family:var(--sans);font-size:18px;font-weight:400;color:var(--ink-4);vertical-align:top;margin-left:2px}
+.kpi .v em{font-style:italic;color:var(--green-deep)}
+.kpi .d{font-size:12px;color:var(--ink-3)}
+.kpi .d.up{color:var(--green-deep)}
+.kpi .d.down{color:var(--red)}
+.kpi .d .arr{font-family:var(--serif);font-style:italic;margin-right:4px}
+.kpi .ft{font-size:11px;color:var(--ink-4);margin-top:10px;padding-top:10px;border-top:1px solid var(--line);display:flex;justify-content:space-between}
+
+/* Sparkline */
+.spark{height:36px;margin-top:10px}
+
+/* ── PROACTIVE BANNER ── */
+.pro{background:var(--green-deep-bg);color:#fff;border-radius:16px;padding:22px 26px;margin-bottom:24px;position:relative;overflow:hidden;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.pro::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 0% 0%, rgba(0,200,81,.22), transparent 55%);pointer-events:none}
+.pro > *{position:relative;z-index:1}
+.pro .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.pro .lbl::before{content:'';width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 4px rgba(0,200,81,.2);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(0,200,81,.15)}50%{box-shadow:0 0 0 8px rgba(0,200,81,0)}}
+.pro h2{font-family:var(--serif);font-size:32px;line-height:1.05;font-weight:400;letter-spacing:-.01em;margin-bottom:8px;max-width:680px}
+.pro h2 em{font-style:italic;color:var(--green-soft)}
+.pro p{font-size:13.5px;color:rgba(255,255,255,.75);max-width:680px}
+.pro-actions{display:flex;gap:8px;flex-shrink:0}
+.pro .btn{padding:11px 18px;border-radius:100px;font-size:13px;font-weight:500;white-space:nowrap}
+.pro .btn-primary{background:var(--green);color:#04200f}
+.pro .btn-primary:hover{background:#fff}
+.pro .btn-ghost{background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.15)}
+.pro .btn-ghost:hover{background:rgba(255,255,255,.14)}
+
+/* ── TABLES ── */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);padding:10px 12px;border-bottom:1px solid var(--line);font-weight:500}
+.tbl td{padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--paper)}
+.client-cell{display:flex;align-items:center;gap:12px}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--green-wash);color:var(--green-deep);display:grid;place-items:center;font-weight:600;font-size:12px;flex-shrink:0;border:1px solid rgba(0,200,81,.3)}
+.avatar.dormant{background:#f4e7d6;color:#b6802a;border-color:#e6cf9a}
+.avatar.new{background:#eaf2f7;color:var(--blue);border-color:#c4d5de}
+.client-cell .name{font-weight:500;font-size:13.5px;line-height:1.1}
+.client-cell .meta{font-size:11px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.04em}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:500}
+.pill.vip{background:#1a201c;color:var(--green)}
+.pill.reg{background:var(--green-wash);color:var(--green-deep)}
+.pill.dor{background:#f7ecd4;color:#8a5f1f}
+.pill.new{background:#e8f0f4;color:var(--blue)}
+.bar{height:6px;background:var(--paper-2);border-radius:100px;overflow:hidden;width:100%;max-width:140px}
+.bar-fill{height:100%;background:var(--green);border-radius:100px}
+.row-act{text-align:right}
+.row-act button{padding:6px 12px;border-radius:100px;background:var(--paper-2);font-size:11px;font-weight:500;color:var(--ink-3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em}
+.row-act button:hover{background:var(--ink);color:var(--paper)}
+
+/* ── HOME A: Ejecutivo ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.main-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px}
+.feed{display:flex;flex-direction:column;gap:0}
+.feed-item{display:grid;grid-template-columns:38px 1fr auto;gap:14px;padding:14px 0;border-bottom:1px dashed var(--line);align-items:flex-start}
+.feed-item:last-child{border-bottom:none}
+.feed-ic{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:15px;flex-shrink:0;background:var(--paper-2);color:var(--ink-3)}
+.feed-ic.g{background:var(--green-wash);color:var(--green-deep)}
+.feed-ic.a{background:#f7ecd4;color:#8a5f1f}
+.feed-ic.b{background:#e8f0f4;color:var(--blue)}
+.feed-item .txt{font-size:13px;line-height:1.45;color:var(--ink-2)}
+.feed-item .txt b{font-weight:500}
+.feed-item .txt .hi{color:var(--green-deep);font-weight:500}
+.feed-item .ts{font-family:var(--mono);font-size:10px;color:var(--ink-4);letter-spacing:.06em;white-space:nowrap}
+
+.ai-suggestions{display:flex;flex-direction:column;gap:10px}
+.sug{border:1px solid var(--line);border-radius:12px;padding:14px;background:linear-gradient(180deg, #fff, #fafaf3)}
+.sug .tag{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--green-deep);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.sug .tag::before{content:'✦';color:var(--green)}
+.sug h4{font-family:var(--serif);font-size:18px;line-height:1.15;font-weight:400;letter-spacing:-.01em;margin-bottom:6px}
+.sug h4 em{font-style:italic;color:var(--green-deep)}
+.sug p{font-size:12px;color:var(--ink-3);line-height:1.5;margin-bottom:10px}
+.sug .acts{display:flex;gap:6px}
+.sug .acts button{font-size:11px;padding:6px 10px;border-radius:100px;font-family:var(--mono);letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.sug .acts .go{background:var(--ink);color:var(--paper)}
+.sug .acts .go:hover{background:var(--green-deep-bg)}
+.sug .acts .dim{background:var(--paper-2);color:var(--ink-4)}
+.sug .acts .dim:hover{background:var(--line)}
+
+/* Chart area */
+.chart-ttl{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.chart-ttl .metrics{display:flex;gap:24px;font-size:12px;color:var(--ink-4)}
+.chart-ttl .metrics b{display:block;font-family:var(--serif);font-size:22px;font-weight:400;color:var(--ink);margin-top:2px}
+.chart-ttl .metrics b em{font-style:italic;color:var(--green-deep)}
+.tabs{display:inline-flex;background:var(--paper-2);border-radius:100px;padding:3px;gap:2px}
+.tabs button{font-size:11px;padding:5px 12px;border-radius:100px;color:var(--ink-4);font-family:var(--mono);text-transform:uppercase;letter-spacing:.06em;font-weight:500}
+.tabs button.active{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.06)}
+
+/* ── HOME B: Operativo ── */
+.op-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;margin-bottom:16px}
+.today-card{background:var(--ink);color:var(--paper);border-radius:16px;padding:24px;position:relative;overflow:hidden}
+.today-card::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 100% 0%, rgba(0,200,81,.15), transparent 55%);pointer-events:none}
+.today-card > *{position:relative}
+.today-card .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:10px}
+.today-card h2{font-family:var(--serif);font-size:72px;line-height:.95;letter-spacing:-.03em;font-weight:400;margin-bottom:6px}
+.today-card h2 em{font-style:italic;color:var(--green)}
+.today-card .delta{font-size:13px;color:rgba(255,255,255,.7)}
+.today-card .delta b{color:var(--green);font-weight:500}
+.today-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
+.today-mini .m{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:4px}
+.today-mini .v{font-family:var(--serif);font-size:28px;line-height:1;font-weight:400;color:#fff}
+.today-mini .v em{font-style:italic;color:var(--green)}
+
+.actions-today{display:flex;flex-direction:column;gap:10px}
+.action-row{display:flex;align-items:center;gap:14px;padding:14px;background:#fff;border:1px solid var(--line);border-radius:12px;transition:transform .15s}
+.action-row:hover{transform:translateY(-1px);border-color:var(--ink-4)}
+.action-row .icon{width:40px;height:40px;border-radius:10px;background:var(--green-wash);color:var(--green-deep);display:grid;place-items:center;font-family:var(--serif);font-style:italic;font-size:20px;flex-shrink:0}
+.action-row .body{flex:1;min-width:0}
+.action-row .t{font-size:13.5px;font-weight:500;line-height:1.2;margin-bottom:2px}
+.action-row .s{font-size:11.5px;color:var(--ink-4)}
+.action-row .go{padding:8px 14px;border-radius:100px;background:var(--ink);color:var(--paper);font-size:11px;font-family:var(--mono);text-transform:uppercase;letter-spacing:.08em;font-weight:500}
+
+/* ── HOME C: Visual ── */
+.visual-hero{background:linear-gradient(135deg,#F6F5F0 0%,#ECEAE1 100%);border:1px solid var(--line);border-radius:16px;padding:36px;margin-bottom:16px;display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;position:relative;overflow:hidden}
+.visual-hero::before{content:'';position:absolute;top:-50%;right:-10%;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle, rgba(0,200,81,.2), transparent 70%);pointer-events:none}
+.visual-hero h2{font-family:var(--serif);font-size:64px;line-height:.95;font-weight:400;letter-spacing:-.02em;margin-bottom:14px}
+.visual-hero h2 em{font-style:italic;color:var(--green-deep)}
+.visual-hero p{font-size:15px;color:var(--ink-3);max-width:380px}
+.donut-wrap{display:flex;justify-content:center;align-items:center;position:relative;z-index:1}
+.donut{width:260px;height:260px;position:relative}
+.donut svg{transform:rotate(-90deg)}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.donut-center .big{font-family:var(--serif);font-size:58px;line-height:1;font-weight:400}
+.donut-center .big em{font-style:italic;color:var(--green-deep)}
+.donut-center .small{font-size:11px;font-family:var(--mono);color:var(--ink-4);text-transform:uppercase;letter-spacing:.1em}
+
+.visual-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+
+/* ── SEGMENTS PAGE ── */
+.seg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.seg-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;cursor:pointer;transition:transform .15s,border-color .15s}
+.seg-card:hover{transform:translateY(-2px);border-color:var(--ink)}
+.seg-card.active{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.seg-card.active .seg-lbl{color:var(--green)}
+.seg-card.active .seg-sub{color:rgba(255,255,255,.6)}
+.seg-dot{width:10px;height:10px;border-radius:50%;background:var(--green);margin-bottom:16px}
+.seg-dot.dor{background:var(--amber)}
+.seg-dot.new{background:var(--blue)}
+.seg-dot.vip{background:var(--ink)}
+.seg-card.active .seg-dot{background:var(--green)}
+.seg-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:8px}
+.seg-n{font-family:var(--serif);font-size:46px;line-height:1;font-weight:400;letter-spacing:-.02em}
+.seg-n em{font-style:italic;color:var(--green-deep)}
+.seg-card.active .seg-n em{color:var(--green)}
+.seg-sub{font-size:12px;color:var(--ink-4);margin-top:4px}
+
+/* ── CAMPAIGNS ── */
+.camp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.camp-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;min-height:280px}
+.camp-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.camp-status .pill.live{background:rgba(0,200,81,.12);color:var(--green-deep)}
+.camp-status .pill.live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:6px;display:inline-block;animation:pulse 2s infinite}
+.camp-status .pill.draft{background:var(--paper-2);color:var(--ink-4)}
+.camp-status .pill.sched{background:#e8f0f4;color:var(--blue)}
+.camp-card h4{font-family:var(--serif);font-size:22px;line-height:1.15;font-weight:400;letter-spacing:-.01em;margin-bottom:8px}
+.camp-card h4 em{font-style:italic;color:var(--green-deep)}
+.camp-card .preview{background:#ECE5DA;border-radius:10px;padding:10px;margin-bottom:14px;font-size:12px;line-height:1.45;color:var(--ink-2);position:relative}
+.camp-card .preview::before{content:'';position:absolute;top:-5px;left:12px;width:10px;height:10px;background:#ECE5DA;transform:rotate(45deg)}
+.camp-card .bub{background:#fff;border-radius:8px;padding:8px 10px;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.camp-card .bub b{color:var(--green-deep)}
+.camp-stats{margin-top:auto;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.camp-stats .m{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);margin-bottom:2px}
+.camp-stats .v{font-family:var(--serif);font-size:22px;line-height:1;font-weight:400}
+.camp-stats .v em{font-style:italic;color:var(--green-deep)}
+
+/* ── REACTIVATION ── */
+.rule{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:12px;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center}
+.rule-switch{width:44px;height:26px;background:var(--green);border-radius:100px;position:relative;flex-shrink:0;cursor:pointer}
+.rule-switch::after{content:'';position:absolute;top:3px;right:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:all .2s}
+.rule-switch.off{background:var(--paper-2)}
+.rule-switch.off::after{right:auto;left:3px}
+.rule-body h4{font-family:var(--serif);font-size:22px;line-height:1.15;font-weight:400;letter-spacing:-.01em;margin-bottom:6px}
+.rule-body h4 em{font-style:italic;color:var(--green-deep)}
+.rule-body p{font-size:12.5px;color:var(--ink-3);line-height:1.5;margin-bottom:10px}
+.rule-chips{display:flex;gap:6px;flex-wrap:wrap}
+.rule-chip{background:var(--paper-2);border:1px solid var(--line);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--ink-3);font-family:var(--mono);letter-spacing:.04em}
+.rule-chip b{color:var(--ink);font-weight:500}
+.rule-stats{text-align:right;flex-shrink:0}
+.rule-stats .v{font-family:var(--serif);font-size:34px;line-height:1;font-weight:400;letter-spacing:-.01em}
+.rule-stats .v em{font-style:italic;color:var(--green-deep)}
+.rule-stats .l{font-size:11px;color:var(--ink-4);margin-top:4px}
+
+/* ── REWARDS ── */
+.reward-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+.reward{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px;display:flex;flex-direction:column;position:relative;overflow:hidden}
+.reward::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle, rgba(0,200,81,.1), transparent 70%);pointer-events:none}
+.reward .ic{font-family:var(--serif);font-style:italic;font-size:44px;color:var(--green-deep);line-height:1;margin-bottom:18px}
+.reward h4{font-family:var(--serif);font-size:22px;line-height:1.15;font-weight:400;letter-spacing:-.01em;margin-bottom:6px}
+.reward p{font-size:12.5px;color:var(--ink-3);line-height:1.4;margin-bottom:14px;flex-grow:1}
+.reward .cost{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);padding:6px 10px;background:var(--paper-2);border-radius:100px;display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-bottom:12px}
+.reward .cost b{color:var(--green-deep);font-weight:500;font-size:12px}
+.reward .claimed{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.04em;padding-top:12px;border-top:1px solid var(--line)}
+.reward .claimed b{color:var(--ink);font-weight:500}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+.big-chart{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px}
+.legend{display:flex;gap:20px;font-size:12px;color:var(--ink-4);margin-top:16px}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:middle}
+
+/* ── ACTION bar ── */
+.actbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:100px;font-size:13px;font-weight:500;white-space:nowrap;transition:all .15s}
+.btn-primary{background:var(--green);color:#04200f}
+.btn-primary:hover{background:var(--green-deep);color:#fff}
+.btn-dark{background:var(--ink);color:var(--paper)}
+.btn-dark:hover{background:#000}
+.btn-ghost{background:transparent;color:var(--ink-3);border:1px solid var(--line)}
+.btn-ghost:hover{background:#fff;color:var(--ink)}
+.btn .arrow{font-family:var(--serif);font-style:italic;font-size:16px;line-height:1;margin-top:-1px}
+
+/* ── SETTINGS ── */
+.set-tabs{display:inline-flex;background:#fff;border:1px solid var(--line);border-radius:100px;padding:4px;gap:2px;margin-bottom:18px}
+.set-tabs button{padding:8px 16px;border-radius:100px;font-size:12.5px;color:var(--ink-4);font-weight:500}
+.set-tabs button.active{background:var(--ink);color:var(--paper)}
+.set-grid{display:grid;grid-template-columns:1fr 380px;gap:24px;align-items:flex-start}
+.set-form{display:flex;flex-direction:column;gap:16px}
+.set-pane{display:none;flex-direction:column;gap:16px}
+.set-pane.visible{display:flex}
+.set-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px}
+.set-card h3{font-family:var(--serif);font-size:24px;line-height:1.1;font-weight:400;letter-spacing:-.01em;margin-bottom:4px}
+.set-card .help{font-size:12.5px;color:var(--ink-4);margin-bottom:18px;line-height:1.5}
+.fld{margin-bottom:14px}
+.fld label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-4);margin-bottom:6px}
+.fld input[type=text], .fld input[type=number], .fld textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px 14px;font-family:var(--sans);font-size:14px;background:var(--paper);color:var(--ink);transition:border-color .15s, background .15s}
+.fld input:focus, .fld textarea:focus{outline:none;border-color:var(--ink);background:#fff}
+.fld textarea{resize:vertical;min-height:60px}
+.fld .verified{display:inline-block;margin-top:6px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--green-deep)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+
+.logo-up{display:flex;align-items:center;gap:20px}
+.logo-preview{width:90px;height:90px;border-radius:18px;background:var(--paper-2);border:1px dashed var(--line-2);display:grid;place-items:center;font-size:40px;color:var(--ink-4);flex-shrink:0;background-size:cover;background-position:center}
+.hint{font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-4);margin-top:8px}
+
+.ratio{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;padding:20px;background:var(--paper);border-radius:12px;margin-bottom:14px}
+.r-side{text-align:center}
+.r-lbl{font-family:var(--mono);font-size:10px;letter-spacing:.12em;color:var(--ink-4);margin-bottom:6px}
+.r-val{font-family:var(--serif);font-size:42px;line-height:1;display:inline-flex;align-items:baseline;gap:4px}
+.r-val input{width:70px;border:none;background:transparent;font-family:var(--serif);font-size:42px;text-align:center;border-bottom:2px solid var(--ink);padding:0 4px;color:var(--green-deep)}
+.r-val em{font-style:italic;color:var(--green-deep);font-size:32px}
+.r-eq{font-family:var(--serif);font-size:36px;color:var(--ink-4)}
+.note{background:var(--green-wash);border:1px solid rgba(0,200,81,.25);border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:var(--ink-2)}
+
+.mult-row{display:grid;grid-template-columns:1fr auto auto;gap:16px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.mult-row:last-of-type{border-bottom:none}
+.mult-body b{display:block;font-size:14px;font-weight:500}
+.mult-body span{font-size:11.5px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.04em}
+.mult-x{font-family:var(--serif);font-size:28px;line-height:1}
+.mult-x em{font-style:italic;color:var(--green-deep)}
+
+.radio-list{display:flex;flex-direction:column;gap:8px}
+.radio{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;font-size:13.5px;transition:border-color .15s}
+.radio.active{border-color:var(--ink);background:var(--paper)}
+.radio input{accent-color:var(--green-deep)}
+.radio b{font-weight:500}
+
+.colors{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.col{width:42px;height:42px;border-radius:12px;border:2px solid transparent;cursor:pointer;position:relative}
+.col.active{border-color:var(--ink);box-shadow:inset 0 0 0 2px #fff}
+.col.picker{background:var(--paper-2);display:grid;place-items:center;border:1px dashed var(--line-2)}
+.col.picker::after{content:'+';font-size:20px;color:var(--ink-4);position:absolute;pointer-events:none}
+.col.picker input{opacity:0;width:100%;height:100%;cursor:pointer}
+
+.tone-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tone-card{border:1px solid var(--line);border-radius:12px;padding:14px;cursor:pointer;display:flex;flex-direction:column;gap:6px;transition:border-color .15s, background .15s}
+.tone-card.active{border-color:var(--ink);background:var(--paper)}
+.tone-card .t-ic{font-size:22px;line-height:1}
+.tone-card .t-name{font-family:var(--serif);font-size:18px;line-height:1.1}
+.tone-card.active .t-name em{font-style:italic;color:var(--green-deep)}
+.tone-card .t-ex{font-size:11.5px;color:var(--ink-4);line-height:1.4;font-style:italic}
+
+.hours{display:flex;flex-direction:column;gap:6px}
+.hr-row{display:grid;grid-template-columns:80px 80px 16px 80px auto;gap:10px;align-items:center;padding:8px 0}
+.hr-row.off input, .hr-row.off span{opacity:.4}
+.hr-row > span:first-child{font-size:13px;font-weight:500}
+.hr-row input{border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:12px;text-align:center;background:var(--paper)}
+.hr-row > span:nth-child(3){color:var(--ink-4);text-align:center}
+.hr-row .rule-switch{margin-left:auto}
+
+.team-row{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.team-row:last-of-type{border-bottom:none}
+.team-row b{font-size:14px;font-weight:500}
+.meta-line{font-size:11px;color:var(--ink-4);font-family:var(--mono);letter-spacing:.04em}
+
+/* Preview panel */
+.prev-sticky{position:sticky;top:90px;display:flex;flex-direction:column;gap:12px}
+.phone-mini{background:#ECE5DA;border:1px solid var(--line);border-radius:20px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(10,15,12,.2)}
+.phone-header{background:#3B6E4A;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;transition:background .2s}
+.phone-avatar{width:36px;height:36px;border-radius:50%;background:#fff;color:var(--green-deep);display:grid;place-items:center;font-size:18px;flex-shrink:0;background-size:cover;background-position:center}
+.phone-name{font-size:13px;font-weight:500;line-height:1.1}
+.phone-sub{font-size:10px;color:rgba(255,255,255,.75)}
+.phone-verify{margin-left:auto;width:14px;height:14px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--green-deep);font-size:9px;font-weight:700}
+.phone-chat{padding:14px 10px;display:flex;flex-direction:column;gap:6px;min-height:260px;background-image:radial-gradient(#c6bfb0 1px, transparent 1px);background-size:16px 16px;background-color:#ECE5DA}
+.bbl{max-width:88%;padding:9px 12px;border-radius:14px;font-size:12.5px;line-height:1.45;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.bbl.in{background:#fff;align-self:flex-start;border-bottom-left-radius:4px}
+.bbl.in.small-sig{font-size:11px;color:var(--ink-4);background:rgba(255,255,255,.6);padding:6px 10px}
+.bbl.out{background:#DCF8C6;align-self:flex-end;border-bottom-right-radius:4px}
+.bbl b{font-weight:600;color:var(--green-deep)}
+.bbl .ts{display:block;font-size:9px;color:#8a8a8a;margin-top:4px;text-align:right}
+.prev-note{font-size:11.5px;color:var(--ink-4);line-height:1.4}
+.prev-note b{color:var(--ink)}
+
+/* ── RESPONSIVE ── */
+@media (max-width:1100px){
+  .app{grid-template-columns:70px 1fr}
+  .side{padding:16px 10px}
+  .side .brand span:not(.brand-mark), .side .nav a span:not(.ic):not(.badge), .side .nav-label, .biz > div:not(.av), .biz .caret, .trial{display:none}
+  .nav a{justify-content:center}
+  .kpi-grid,.visual-grid,.camp-grid,.reward-grid,.seg-grid,.analytics-grid{grid-template-columns:repeat(2,1fr)}
+  .main-grid,.op-grid,.visual-hero{grid-template-columns:1fr}
+  .donut{width:200px;height:200px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="side">
+    <a href="#" class="brand"><span class="brand-mark">W</span> <span>Whats<em>Loyalty</em></span></a>
+
+    <div class="biz">
+      <div class="av">☕</div>
+      <div>
+        <div class="name">Café Moreno</div>
+        <div class="sub">MADRID · CHAMBERÍ</div>
+      </div>
+      <span class="caret">▾</span>
+    </div>
+
+    <span class="nav-label">Principal</span>
+    <nav class="nav" id="nav">
+      <a href="#" data-page="home" class="active"><span class="ic">◉</span> <span>Home</span></a>
+      <a href="#" data-page="segments"><span class="ic">☌</span> <span>Segmentos</span></a>
+      <a href="#" data-page="campaigns"><span class="ic">✎</span> <span>Campañas</span><span class="badge">2</span></a>
+      <a href="#" data-page="reactivation"><span class="ic">↻</span> <span>Reactivación</span></a>
+      <a href="#" data-page="rewards"><span class="ic">★</span> <span>Recompensas</span></a>
+      <a href="#" data-page="analytics"><span class="ic">▦</span> <span>Analítica</span></a>
+      <a href="#" data-page="settings"><span class="ic">⚙</span> <span>Ajustes</span></a>
+    </nav>
+
+    <div class="side-bottom">
+      <div class="trial">
+        <b>7 días <em>restantes</em></b>
+        de prueba gratuita. Activa tu plan para seguir reactivando.
+        <a href="#">ACTIVAR PLAN →</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="top">
+      <div class="crumbs">WhatsLoyalty / <span id="crumb-page">Home</span></div>
+      <div class="search">
+        <span>⌕</span>
+        <span>Buscar cliente, campaña, número…</span>
+        <kbd>⌘ K</kbd>
+      </div>
+      <button class="bell">♪</button>
+      <button class="top-btn">⇵ Exportar</button>
+      <button class="top-btn dark">+ Registrar venta</button>
+    </div>
+
+    <!-- ═══ HOME PAGE ═══ -->
+    <section class="page visible" id="page-home">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> MARTES, 18 MARZO · 11:42 · 22°C MADRID</div>
+          <h1>Buenos días, <em>Javier</em>.</h1>
+          <p class="sub">Esta mañana tienes <b style="color:var(--ink)">3 acciones sugeridas</b> y <b style="color:var(--green-deep)">18 clientes dormidos</b> que podemos reactivar en un clic.</p>
+        </div>
+        <div class="var-sel" id="var-sel">
+          <button class="active" data-var="exec">Ejecutivo</button>
+          <button data-var="ops">Operativo</button>
+          <button data-var="visual">Visual</button>
+        </div>
+      </div>
+
+      <!-- ─── VARIANT A: EXECUTIVE ─── -->
+      <div class="variant visible" id="var-exec">
+
+        <div class="pro">
+          <div>
+            <div class="lbl">✦ IA SUGIERE · 7:00 AM</div>
+            <h2>Hay <em>18 clientes</em> que llevan más de 21 días sin venir.</h2>
+            <p>El histórico dice que con un incentivo tipo "café gratis" vuelven el 34%. Serían <b style="color:#fff">~6 visitas nuevas</b> esta semana, ~€78 de ticket medio.</p>
+          </div>
+          <div class="pro-actions">
+            <button class="btn btn-ghost">Ver lista</button>
+            <button class="btn btn-primary">Lanzar ahora <span class="arrow">→</span></button>
+          </div>
+        </div>
+
+        <!-- KPI Row -->
+        <div class="kpi-grid">
+          <div class="card kpi">
+            <div class="ttl"><span class="dot"></span> CLIENTES ACTIVOS</div>
+            <div class="v">412</div>
+            <div class="d up"><span class="arr">↗</span> +38 este mes</div>
+            <svg class="spark" viewBox="0 0 140 36" preserveAspectRatio="none"><polyline fill="none" stroke="#00a843" stroke-width="2" points="0,28 15,24 30,25 45,20 60,22 75,16 90,18 105,12 120,14 140,6"/><polyline fill="rgba(0,168,67,0.1)" stroke="none" points="0,28 15,24 30,25 45,20 60,22 75,16 90,18 105,12 120,14 140,6 140,36 0,36"/></svg>
+            <div class="ft"><span>ÚLTIMOS 30 DÍAS</span><span>+10,2%</span></div>
+          </div>
+          <div class="card kpi">
+            <div class="ttl"><span class="dot" style="background:var(--amber)"></span> DORMIDOS REACTIVADOS</div>
+            <div class="v"><em>43</em></div>
+            <div class="d up"><span class="arr">↗</span> este mes · ratio 38%</div>
+            <svg class="spark" viewBox="0 0 140 36" preserveAspectRatio="none"><polyline fill="none" stroke="#00a843" stroke-width="2" points="0,30 15,28 30,26 45,20 60,18 75,22 90,14 105,10 120,12 140,8"/></svg>
+            <div class="ft"><span>ROI: €1.247</span><span>+22%</span></div>
+          </div>
+          <div class="card kpi">
+            <div class="ttl"><span class="dot" style="background:var(--blue)"></span> TASA REPETICIÓN</div>
+            <div class="v">63<sup>%</sup></div>
+            <div class="d up"><span class="arr">↗</span> vs 51% antes</div>
+            <svg class="spark" viewBox="0 0 140 36" preserveAspectRatio="none"><polyline fill="none" stroke="#00a843" stroke-width="2" points="0,24 15,22 30,20 45,18 60,14 75,16 90,12 105,14 120,10 140,8"/></svg>
+            <div class="ft"><span>CLIENTES QUE VUELVEN</span><span>90 DÍAS</span></div>
+          </div>
+          <div class="card kpi">
+            <div class="ttl"><span class="dot"></span> APERTURA WHATSAPP</div>
+            <div class="v">91<sup>%</sup></div>
+            <div class="d up"><span class="arr">↗</span> leído en &lt;10min</div>
+            <svg class="spark" viewBox="0 0 140 36" preserveAspectRatio="none"><polyline fill="none" stroke="#00a843" stroke-width="2" points="0,8 15,10 30,8 45,6 60,8 75,4 90,6 105,4 120,6 140,4"/></svg>
+            <div class="ft"><span>MEDIA SECTOR: 22%</span><span>HOY</span></div>
+          </div>
+        </div>
+
+        <!-- Activity + AI Sugerencias -->
+        <div class="main-grid">
+          <div class="card">
+            <div class="chart-ttl">
+              <div>
+                <div class="ttl"><span class="dot"></span> ACTIVIDAD DE CLIENTES</div>
+                <div class="metrics">
+                  <div>Visitas<b><em>184</em></b></div>
+                  <div>Nuevos<b>27</b></div>
+                  <div>Dormidos<b style="color:var(--amber)">18</b></div>
+                </div>
+              </div>
+              <div class="tabs">
+                <button>7D</button>
+                <button class="active">30D</button>
+                <button>90D</button>
+              </div>
+            </div>
+            <!-- Mini bar chart -->
+            <svg viewBox="0 0 600 180" preserveAspectRatio="none" style="width:100%;height:180px">
+              <line x1="0" y1="145" x2="600" y2="145" stroke="#dcd9cc" stroke-dasharray="2 4"/>
+              <line x1="0" y1="95" x2="600" y2="95" stroke="#dcd9cc" stroke-dasharray="2 4"/>
+              <line x1="0" y1="45" x2="600" y2="45" stroke="#dcd9cc" stroke-dasharray="2 4"/>
+              <g fill="#00C851">
+                <!-- bars -->
+                <rect x="10" y="110" width="14" height="35" rx="2"/>
+                <rect x="30" y="95" width="14" height="50" rx="2"/>
+                <rect x="50" y="85" width="14" height="60" rx="2"/>
+                <rect x="70" y="75" width="14" height="70" rx="2"/>
+                <rect x="90" y="90" width="14" height="55" rx="2"/>
+                <rect x="110" y="70" width="14" height="75" rx="2"/>
+                <rect x="130" y="60" width="14" height="85" rx="2"/>
+                <rect x="150" y="100" width="14" height="45" rx="2"/>
+                <rect x="170" y="80" width="14" height="65" rx="2"/>
+                <rect x="190" y="65" width="14" height="80" rx="2"/>
+                <rect x="210" y="55" width="14" height="90" rx="2"/>
+                <rect x="230" y="68" width="14" height="77" rx="2"/>
+                <rect x="250" y="50" width="14" height="95" rx="2"/>
+                <rect x="270" y="45" width="14" height="100" rx="2"/>
+                <rect x="290" y="75" width="14" height="70" rx="2"/>
+                <rect x="310" y="60" width="14" height="85" rx="2"/>
+                <rect x="330" y="40" width="14" height="105" rx="2"/>
+                <rect x="350" y="35" width="14" height="110" rx="2"/>
+                <rect x="370" y="50" width="14" height="95" rx="2"/>
+                <rect x="390" y="38" width="14" height="107" rx="2"/>
+                <rect x="410" y="30" width="14" height="115" rx="2"/>
+                <rect x="430" y="25" width="14" height="120" rx="2"/>
+                <rect x="450" y="45" width="14" height="100" rx="2"/>
+                <rect x="470" y="32" width="14" height="113" rx="2"/>
+                <rect x="490" y="20" width="14" height="125" rx="2"/>
+                <rect x="510" y="28" width="14" height="117" rx="2"/>
+                <rect x="530" y="15" width="14" height="130" rx="2"/>
+                <rect x="550" y="22" width="14" height="123" rx="2"/>
+                <rect x="570" y="10" width="14" height="135" rx="2"/>
+              </g>
+              <!-- axis labels -->
+              <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7570">
+                <text x="10" y="165">L 17</text>
+                <text x="150" y="165">V 21</text>
+                <text x="290" y="165">M 25</text>
+                <text x="430" y="165">S 29</text>
+                <text x="570" y="165">X 03</text>
+              </g>
+            </svg>
+          </div>
+          <div class="card">
+            <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> SUGERENCIAS DE IA</div>
+            <div class="ai-suggestions">
+              <div class="sug">
+                <div class="tag">REACTIVACIÓN</div>
+                <h4><em>18 dormidos</em> desde hace 3+ semanas</h4>
+                <p>Incentivo "café gratis" → histórico 34% vuelta.</p>
+                <div class="acts"><button class="go">Lanzar</button><button class="dim">Luego</button></div>
+              </div>
+              <div class="sug">
+                <div class="tag">FIDELIZACIÓN</div>
+                <h4>7 clientes a <em>un café</em> del siguiente gratis</h4>
+                <p>Avísales — la mayoría vuelve en 48h cuando lo saben.</p>
+                <div class="acts"><button class="go">Avisar</button><button class="dim">Luego</button></div>
+              </div>
+              <div class="sug">
+                <div class="tag">RIESGO DE FUGA</div>
+                <h4>Marta R. está <em>bajando su frecuencia</em></h4>
+                <p>Era 4 cafés/semana → 1 en las últimas 2. Escríbele.</p>
+                <div class="acts"><button class="go">Abrir chat</button><button class="dim">Luego</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent activity + Top VIP -->
+        <div class="main-grid">
+          <div class="card">
+            <div class="ttl" style="margin-bottom:14px;display:flex;justify-content:space-between">
+              <span><span class="dot"></span> ACTIVIDAD RECIENTE</span>
+              <a href="#" style="font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-4)">VER TODO →</a>
+            </div>
+            <div class="feed">
+              <div class="feed-item">
+                <div class="feed-ic g">+</div>
+                <div class="txt"><b>Marta Rodríguez</b> ha ganado <span class="hi">+15 pts</span> — café con leche y tostada · <span style="color:var(--ink-4)">6,80€</span></div>
+                <div class="ts">HACE 2 MIN</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic g">★</div>
+                <div class="txt"><b>Pablo Giménez</b> ha canjeado <span class="hi">el café 100% gratis</span> · 8ª visita del mes</div>
+                <div class="ts">HACE 18 MIN</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic a">↻</div>
+                <div class="txt">La IA <b>ha reactivado a Sonia Torres</b> — le envió el mensaje automático hace 20 min y <span class="hi">ya está de camino</span></div>
+                <div class="ts">HACE 22 MIN</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic b">+</div>
+                <div class="txt"><b>Álvaro Quintana</b> · cliente nuevo registrado · <span class="hi">primer café con descuento de bienvenida</span></div>
+                <div class="ts">HACE 34 MIN</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic g">✓</div>
+                <div class="txt">Campaña <b>"Vuelve esta semana"</b> · entregada a 43 clientes · <span class="hi">41 leídos</span></div>
+                <div class="ts">HACE 1H</div>
+              </div>
+              <div class="feed-item">
+                <div class="feed-ic">✎</div>
+                <div class="txt"><b>Nuria Domínguez</b> ha respondido al mensaje: <em>"¡Guardadme la mesa del miércoles!"</em></div>
+                <div class="ts">HACE 2H</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> TOP 5 VIP ESTE MES</div>
+            <table class="tbl">
+              <tbody>
+                <tr><td><div class="client-cell"><div class="avatar">MR</div><div><div class="name">Marta Rodríguez</div><div class="meta">12 VISITAS · 87€</div></div></div></td><td class="row-act"><span class="pill vip">VIP</span></td></tr>
+                <tr><td><div class="client-cell"><div class="avatar">PG</div><div><div class="name">Pablo Giménez</div><div class="meta">10 VISITAS · 78€</div></div></div></td><td class="row-act"><span class="pill vip">VIP</span></td></tr>
+                <tr><td><div class="client-cell"><div class="avatar">ND</div><div><div class="name">Nuria Domínguez</div><div class="meta">9 VISITAS · 64€</div></div></div></td><td class="row-act"><span class="pill vip">VIP</span></td></tr>
+                <tr><td><div class="client-cell"><div class="avatar">CC</div><div><div class="name">Carlos Cebrián</div><div class="meta">8 VISITAS · 72€</div></div></div></td><td class="row-act"><span class="pill vip">VIP</span></td></tr>
+                <tr><td><div class="client-cell"><div class="avatar">LM</div><div><div class="name">Laura Muñoz</div><div class="meta">8 VISITAS · 59€</div></div></div></td><td class="row-act"><span class="pill vip">VIP</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── VARIANT B: OPERATIVO ─── -->
+      <div class="variant" id="var-ops">
+
+        <div class="op-grid">
+          <div class="today-card">
+            <div class="lbl">CAJA DE HOY · EN DIRECTO</div>
+            <h2>847<em>€</em></h2>
+            <div class="delta"><b>↗ +23%</b> vs martes medio · faltan 6h para cerrar</div>
+            <div class="today-mini">
+              <div><div class="m">VISITAS</div><div class="v">84</div></div>
+              <div><div class="m">TICKET MEDIO</div><div class="v">10<em>€</em></div></div>
+              <div><div class="m">NUEVOS</div><div class="v">6</div></div>
+            </div>
+          </div>
+
+          <div class="actions-today">
+            <div class="ttl"><span class="dot"></span> 3 ACCIONES PARA HOY</div>
+            <div class="action-row">
+              <div class="icon">!</div>
+              <div class="body"><div class="t">Reactivar 18 clientes dormidos</div><div class="s">Última vez que vinieron: hace 21-30 días · ROI histórico 34%</div></div>
+              <button class="go">HACER</button>
+            </div>
+            <div class="action-row">
+              <div class="icon">★</div>
+              <div class="body"><div class="t">Avisar a los 7 que están a 1 café del gratis</div><div class="s">El 80% vuelve en 48h cuando se enteran</div></div>
+              <button class="go">HACER</button>
+            </div>
+            <div class="action-row">
+              <div class="icon">↻</div>
+              <div class="body"><div class="t">Responder a Nuria D. y Alberto R.</div><div class="s">Han escrito al inbox en las últimas 2h</div></div>
+              <button class="go">ABRIR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live table -->
+        <div class="card" style="margin-bottom:16px">
+          <div class="ttl" style="margin-bottom:14px;display:flex;justify-content:space-between">
+            <span><span class="dot"></span> ÚLTIMAS VENTAS · EN VIVO</span>
+            <div class="actbar"><button class="btn btn-dark">+ Registrar venta</button></div>
+          </div>
+          <table class="tbl">
+            <thead><tr><th>CLIENTE</th><th>IMPORTE</th><th>PUNTOS</th><th>WHATSAPP</th><th>TIEMPO</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><div class="client-cell"><div class="avatar">MR</div><div><div class="name">Marta Rodríguez</div><div class="meta">+34 612 34 XX XX</div></div></div></td><td><b>6,80€</b></td><td><span style="color:var(--green-deep);font-weight:500">+15 pts</span></td><td><span class="pill reg">✓ LEÍDO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 2 MIN</td><td class="row-act"><button>VER</button></td></tr>
+              <tr><td><div class="client-cell"><div class="avatar">PG</div><div><div class="name">Pablo Giménez</div><div class="meta">CAFÉ GRATIS CANJEADO</div></div></div></td><td><b>0€</b></td><td><span style="color:var(--red);font-weight:500">−100 pts</span></td><td><span class="pill reg">✓ LEÍDO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 18 MIN</td><td class="row-act"><button>VER</button></td></tr>
+              <tr><td><div class="client-cell"><div class="avatar new">AQ</div><div><div class="name">Álvaro Quintana</div><div class="meta">NUEVO · BIENVENIDA</div></div></div></td><td><b>4,20€</b></td><td><span style="color:var(--green-deep);font-weight:500">+10 pts</span></td><td><span class="pill new">NUEVO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 34 MIN</td><td class="row-act"><button>VER</button></td></tr>
+              <tr><td><div class="client-cell"><div class="avatar">SM</div><div><div class="name">Silvia Morán</div><div class="meta">+34 654 12 XX XX</div></div></div></td><td><b>12,50€</b></td><td><span style="color:var(--green-deep);font-weight:500">+25 pts</span></td><td><span class="pill reg">✓ LEÍDO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 42 MIN</td><td class="row-act"><button>VER</button></td></tr>
+              <tr><td><div class="client-cell"><div class="avatar dormant">JM</div><div><div class="name">Javier Mérida</div><div class="meta">REACTIVADO · 26 DÍAS</div></div></div></td><td><b>8,00€</b></td><td><span style="color:var(--green-deep);font-weight:500">+16 pts</span></td><td><span class="pill dor">REACTIVADO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 1H</td><td class="row-act"><button>VER</button></td></tr>
+              <tr><td><div class="client-cell"><div class="avatar">CC</div><div><div class="name">Carlos Cebrián</div><div class="meta">+34 600 33 XX XX</div></div></div></td><td><b>5,40€</b></td><td><span style="color:var(--green-deep);font-weight:500">+11 pts</span></td><td><span class="pill reg">✓ LEÍDO</span></td><td style="font-family:var(--mono);font-size:11px;color:var(--ink-4)">HACE 1H 15M</td><td class="row-act"><button>VER</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── VARIANT C: VISUAL ─── -->
+      <div class="variant" id="var-visual">
+
+        <div class="visual-hero">
+          <div>
+            <div class="ttl"><span class="dot"></span> RESUMEN DEL MES · MARZO 2026</div>
+            <h2>Lo <em>estamos petando</em>.</h2>
+            <p>412 clientes activos, 63% vuelve en 90 días, y la IA ya ha traído 43 dormidos de vuelta. <b style="color:var(--ink)">La caja lo nota.</b></p>
+            <div class="actbar" style="margin-top:18px">
+              <button class="btn btn-dark">Ver análisis completo <span class="arrow">→</span></button>
+              <button class="btn btn-ghost">Compartir con socios</button>
+            </div>
+          </div>
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg viewBox="0 0 260 260" width="260" height="260">
+                <circle cx="130" cy="130" r="100" fill="none" stroke="var(--paper-2)" stroke-width="28"/>
+                <!-- 63% -->
+                <circle cx="130" cy="130" r="100" fill="none" stroke="var(--green)" stroke-width="28" stroke-linecap="round" stroke-dasharray="395.8 628" transform="rotate(-90 130 130)"/>
+              </svg>
+              <div class="donut-center">
+                <div class="big"><em>63</em>%</div>
+                <div class="small">TASA DE REPETICIÓN<br>+12 PTS VS TRIMESTRE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="visual-grid">
+          <div class="card kpi">
+            <div class="ttl"><span class="dot"></span> NUEVOS VS RECURRENTES</div>
+            <div class="v"><em>27</em> / 385</div>
+            <div class="d">NUEVOS · RECURRENTES</div>
+            <svg viewBox="0 0 200 50" style="margin-top:14px;width:100%;height:50px"><rect x="0" y="20" width="14" height="20" rx="2" fill="var(--blue)"/><rect x="15" y="5" width="14" height="35" rx="2" fill="var(--green)"/><rect x="35" y="22" width="14" height="18" rx="2" fill="var(--blue)"/><rect x="50" y="8" width="14" height="32" rx="2" fill="var(--green)"/><rect x="70" y="18" width="14" height="22" rx="2" fill="var(--blue)"/><rect x="85" y="2" width="14" height="38" rx="2" fill="var(--green)"/><rect x="105" y="20" width="14" height="20" rx="2" fill="var(--blue)"/><rect x="120" y="4" width="14" height="36" rx="2" fill="var(--green)"/><rect x="140" y="16" width="14" height="24" rx="2" fill="var(--blue)"/><rect x="155" y="0" width="14" height="40" rx="2" fill="var(--green)"/></svg>
+          </div>
+          <div class="card kpi">
+            <div class="ttl"><span class="dot" style="background:var(--amber)"></span> PUNTOS CANJEADOS</div>
+            <div class="v"><em>3.240</em></div>
+            <div class="d up"><span class="arr">↗</span> +18% vs feb · 42 canjes</div>
+            <svg class="spark" viewBox="0 0 200 60" preserveAspectRatio="none"><path d="M0 50 Q 50 20 100 30 T 200 10" stroke="var(--amber)" stroke-width="2.5" fill="none"/><path d="M0 50 Q 50 20 100 30 T 200 10 L 200 60 L 0 60 Z" fill="rgba(224,163,48,0.1)"/></svg>
+          </div>
+          <div class="card kpi">
+            <div class="ttl"><span class="dot" style="background:var(--blue)"></span> HORA MÁS ACTIVA</div>
+            <div class="v">08:<em>30</em></div>
+            <div class="d">122 cafés de media · hora punta</div>
+            <svg viewBox="0 0 200 60" style="margin-top:10px;width:100%;height:60px">
+              <g fill="var(--green)" opacity="0.8">
+                <rect x="0" y="50" width="10" height="10" rx="1"/>
+                <rect x="12" y="40" width="10" height="20" rx="1"/>
+                <rect x="24" y="20" width="10" height="40" rx="1"/>
+                <rect x="36" y="5" width="10" height="55" rx="1" fill="var(--green-deep)"/>
+                <rect x="48" y="15" width="10" height="45" rx="1"/>
+                <rect x="60" y="30" width="10" height="30" rx="1"/>
+                <rect x="72" y="35" width="10" height="25" rx="1"/>
+                <rect x="84" y="45" width="10" height="15" rx="1"/>
+                <rect x="96" y="25" width="10" height="35" rx="1"/>
+                <rect x="108" y="20" width="10" height="40" rx="1"/>
+                <rect x="120" y="40" width="10" height="20" rx="1"/>
+                <rect x="132" y="45" width="10" height="15" rx="1"/>
+                <rect x="144" y="50" width="10" height="10" rx="1"/>
+                <rect x="156" y="48" width="10" height="12" rx="1"/>
+                <rect x="168" y="52" width="10" height="8" rx="1"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+        <div class="main-grid">
+          <div class="card">
+            <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> PROGRAMA DE FIDELIDAD · MES EN MES</div>
+            <svg viewBox="0 0 600 220" style="width:100%;height:220px" preserveAspectRatio="none">
+              <!-- grid -->
+              <g stroke="#dcd9cc" stroke-dasharray="2 4">
+                <line x1="0" y1="55" x2="600" y2="55"/>
+                <line x1="0" y1="110" x2="600" y2="110"/>
+                <line x1="0" y1="165" x2="600" y2="165"/>
+              </g>
+              <!-- area active -->
+              <path d="M30 180 L130 150 L230 120 L330 100 L430 75 L530 55 L570 45 L570 200 L30 200 Z" fill="rgba(0,200,81,0.12)"/>
+              <path d="M30 180 L130 150 L230 120 L330 100 L430 75 L530 55 L570 45" stroke="var(--green)" stroke-width="2.5" fill="none"/>
+              <!-- repetition line -->
+              <path d="M30 190 L130 175 L230 160 L330 150 L430 130 L530 105 L570 95" stroke="var(--ink)" stroke-width="2" fill="none" stroke-dasharray="4 4"/>
+              <!-- dots on active -->
+              <g fill="var(--green-deep)">
+                <circle cx="30" cy="180" r="4"/>
+                <circle cx="130" cy="150" r="4"/>
+                <circle cx="230" cy="120" r="4"/>
+                <circle cx="330" cy="100" r="4"/>
+                <circle cx="430" cy="75" r="4"/>
+                <circle cx="530" cy="55" r="4"/>
+                <circle cx="570" cy="45" r="5" fill="var(--green)" stroke="#fff" stroke-width="2"/>
+              </g>
+              <!-- x labels -->
+              <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#6b7570">
+                <text x="20" y="215">SEP</text><text x="120" y="215">OCT</text><text x="220" y="215">NOV</text><text x="320" y="215">DIC</text><text x="420" y="215">ENE</text><text x="520" y="215">FEB</text><text x="563" y="215">MAR</text>
+              </g>
+            </svg>
+            <div class="legend"><span><span class="legend-dot" style="background:var(--green)"></span>Clientes activos</span><span><span class="legend-dot" style="background:var(--ink)"></span>Repetidores 90d</span></div>
+          </div>
+          <div class="card">
+            <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> TU MES EN 5 FRASES</div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div><div style="font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em">Marta R. te visitó <em style="font-style:italic;color:var(--green-deep)">12 veces</em> este mes.</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--mono);margin-top:4px">TU CLIENTE ESTRELLA</div></div>
+              <div><div style="font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em">La IA reactivó a <em style="font-style:italic;color:var(--green-deep)">43 dormidos</em> — trajiste €1.247.</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--mono);margin-top:4px">RETURN ON WHATSAPP</div></div>
+              <div><div style="font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em">Los martes a las <em style="font-style:italic;color:var(--green-deep)">08:30</em> es tu hora punta.</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--mono);margin-top:4px">PATRÓN DEL MES</div></div>
+              <div><div style="font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em"><em style="font-style:italic;color:var(--green-deep)">91%</em> de tus mensajes se leyeron.</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--mono);margin-top:4px">FRENTE AL 22% DEL SECTOR</div></div>
+              <div><div style="font-family:var(--serif);font-size:22px;line-height:1.15;letter-spacing:-.01em">Cumples <em style="font-style:italic;color:var(--green-deep)">2 años</em> con WhatsLoyalty en abril.</div><div style="font-size:11px;color:var(--ink-4);font-family:var(--mono);margin-top:4px">GRACIAS 🫶</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ═══ SEGMENTS PAGE ═══ -->
+    <section class="page" id="page-segments">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> CRM · SEGMENTACIÓN AUTOMÁTICA</div>
+          <h1>Tus <em>clientes</em>, en grupos que <em>sí</em> dicen algo.</h1>
+          <p class="sub">WhatsLoyalty los clasifica solo según frecuencia, ticket y última visita. Tú decides a quién hablar y qué decirle.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost">Crear segmento</button><button class="btn btn-dark">Exportar CSV</button></div>
+      </div>
+
+      <div class="seg-grid">
+        <div class="seg-card active"><div class="seg-dot vip"></div><div class="seg-lbl">VIP · &gt;40€/MES</div><div class="seg-n"><em>28</em></div><div class="seg-sub">6,8% de tu base · 34% de la caja</div></div>
+        <div class="seg-card"><div class="seg-dot"></div><div class="seg-lbl">REGULARES · 2-4/MES</div><div class="seg-n">186</div><div class="seg-sub">45% de la base · muy estables</div></div>
+        <div class="seg-card"><div class="seg-dot dor"></div><div class="seg-lbl">DORMIDOS · &gt;21 DÍAS</div><div class="seg-n">43</div><div class="seg-sub">10,4% · 18 auto-reactivables</div></div>
+        <div class="seg-card"><div class="seg-dot new"></div><div class="seg-lbl">NUEVOS · &lt;30 DÍAS</div><div class="seg-n">27</div><div class="seg-sub">6,5% · conversión a regular 61%</div></div>
+      </div>
+
+      <div class="card">
+        <div class="ttl" style="margin-bottom:14px;display:flex;justify-content:space-between">
+          <span><span class="dot"></span> VIP · 28 CLIENTES</span>
+          <div class="actbar"><button class="btn btn-ghost">Filtrar</button><button class="btn btn-primary">Enviar mensaje al segmento <span class="arrow">→</span></button></div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>CLIENTE</th><th>ÚLTIMA VISITA</th><th>FRECUENCIA</th><th>TICKET MEDIO</th><th>PUNTOS</th><th>PROGRESO</th><th>WHATSAPP</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><div class="client-cell"><div class="avatar">MR</div><div><div class="name">Marta Rodríguez</div><div class="meta">ALTA: MAR 2024</div></div></div></td><td>HOY, 10:42</td><td><b>12×</b> / mes</td><td>7,25€</td><td><b>85</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:85%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">PG</div><div><div class="name">Pablo Giménez</div><div class="meta">ALTA: ENE 2024</div></div></div></td><td>HOY, 11:24</td><td><b>10×</b> / mes</td><td>7,80€</td><td><b>0</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:0%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">ND</div><div><div class="name">Nuria Domínguez</div><div class="meta">ALTA: JUN 2024</div></div></div></td><td>AYER</td><td><b>9×</b> / mes</td><td>7,10€</td><td><b>64</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:64%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">CC</div><div><div class="name">Carlos Cebrián</div><div class="meta">ALTA: FEB 2024</div></div></div></td><td>AYER</td><td><b>8×</b> / mes</td><td>9,00€</td><td><b>42</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:42%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">LM</div><div><div class="name">Laura Muñoz</div><div class="meta">ALTA: AGO 2024</div></div></div></td><td>HACE 3D</td><td><b>8×</b> / mes</td><td>7,40€</td><td><b>91</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:91%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">JF</div><div><div class="name">Javier Fernández</div><div class="meta">ALTA: DIC 2023</div></div></div></td><td>HOY, 08:15</td><td><b>7×</b> / mes</td><td>6,90€</td><td><b>23</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:23%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">SB</div><div><div class="name">Sofía Berenguer</div><div class="meta">ALTA: SEP 2024</div></div></div></td><td>HACE 5D</td><td><b>6×</b> / mes</td><td>8,20€</td><td><b>77</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:77%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+            <tr><td><div class="client-cell"><div class="avatar">AT</div><div><div class="name">Antonio Trillo</div><div class="meta">ALTA: NOV 2023</div></div></div></td><td>HOY, 09:02</td><td><b>6×</b> / mes</td><td>10,30€</td><td><b>56</b>/100</td><td><div class="bar"><div class="bar-fill" style="width:56%"></div></div></td><td><span class="pill vip">VIP</span></td><td class="row-act"><button>ABRIR</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ═══ CAMPAIGNS PAGE ═══ -->
+    <section class="page" id="page-campaigns">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> BROADCAST · WHATSAPP</div>
+          <h1>Habla con tus clientes. <em>Cuando quieras.</em></h1>
+          <p class="sub">Sin algoritmo, sin pagar alcance. El 91% abre el mensaje en menos de 10 minutos.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost">Plantillas</button><button class="btn btn-dark">+ Nueva campaña</button></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> ENVIADOS ESTE MES</div><div class="v">2.341</div><div class="d up"><span class="arr">↗</span> 4 campañas</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> TASA DE APERTURA</div><div class="v">91<sup>%</sup></div><div class="d up"><span class="arr">↗</span> +2pp vs último mes</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> CTR · CLICS A ACCIÓN</div><div class="v">38<sup>%</sup></div><div class="d">BENCHMARK SECTOR 12%</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> VISITAS ATRIBUIDAS</div><div class="v"><em>187</em></div><div class="d up"><span class="arr">↗</span> €1.486 de caja</div></div>
+      </div>
+
+      <div class="camp-grid">
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill live">EN VIVO</span><span style="font-family:var(--mono);font-size:10px;color:var(--ink-4)">LANZADA HACE 2H</span></div>
+          <h4>Vuelve esta <em>semana</em></h4>
+          <div class="preview"><div class="bub">Hola Javi 👋 Hace 24 días que no te vemos. Te guardamos <b>una cerveza por la casa</b> si pasas esta semana 🍺</div></div>
+          <div class="camp-stats">
+            <div><div class="m">ENVIADOS</div><div class="v">43</div></div>
+            <div><div class="m">ABIERTOS</div><div class="v"><em>41</em></div></div>
+            <div><div class="m">VOLVIERON</div><div class="v"><em>14</em></div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill sched">PROGRAMADA</span><span style="font-family:var(--mono);font-size:10px;color:var(--ink-4)">SÁBADO 10:00</span></div>
+          <h4>Brunch del <em>fin de semana</em></h4>
+          <div class="preview"><div class="bub">Sábado = brunch 🥐 Tenemos mesa para 2 a las 11:30 con tu nombre, ¿la reservamos? Responde "SÍ".</div></div>
+          <div class="camp-stats">
+            <div><div class="m">AUDIENCIA</div><div class="v">214</div></div>
+            <div><div class="m">SEGMENTO</div><div class="v" style="font-size:13px;line-height:1.1;margin-top:6px">REGULARES</div></div>
+            <div><div class="m">EST. VOLVER</div><div class="v"><em>~48</em></div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill reg">ENVIADA</span><span style="font-family:var(--mono);font-size:10px;color:var(--ink-4)">HACE 6 DÍAS</span></div>
+          <h4>Nueva <em>carta</em> de primavera</h4>
+          <div class="preview"><div class="bub">¡Estrenamos carta! 🌿 Tortitas de matcha, bowl de primavera y el café de origen Etiopía que llevabas pidiendo. <b>Ven a probarlos</b>.</div></div>
+          <div class="camp-stats">
+            <div><div class="m">ENVIADOS</div><div class="v">389</div></div>
+            <div><div class="m">ABIERTOS</div><div class="v"><em>368</em></div></div>
+            <div><div class="m">VOLVIERON</div><div class="v"><em>122</em></div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill draft">BORRADOR</span></div>
+          <h4>Día de la <em>madre</em></h4>
+          <div class="preview" style="color:var(--ink-4);font-style:italic"><div class="bub">Sin texto aún — esperando a definir la promo de mayo</div></div>
+          <div class="camp-stats">
+            <div><div class="m">AUDIENCIA</div><div class="v">—</div></div>
+            <div><div class="m">FECHA</div><div class="v" style="font-size:13px;margin-top:6px">1 MAY</div></div>
+            <div><div class="m">EST.</div><div class="v">—</div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill reg">ENVIADA</span><span style="font-family:var(--mono);font-size:10px;color:var(--ink-4)">HACE 14 DÍAS</span></div>
+          <h4>Cumpleaños de <em>Marta R.</em></h4>
+          <div class="preview"><div class="bub">🎂 ¡Felicidades, Marta! El café va por la casa cuando quieras esta semana. Además te sumamos <b>+50 puntos</b> de regalo.</div></div>
+          <div class="camp-stats">
+            <div><div class="m">ENVIADOS</div><div class="v">1</div></div>
+            <div><div class="m">ABIERTOS</div><div class="v"><em>1</em></div></div>
+            <div><div class="m">VOLVIÓ</div><div class="v"><em>✓</em></div></div>
+          </div>
+        </div>
+        <div class="camp-card">
+          <div class="camp-status"><span class="pill reg">ENVIADA</span><span style="font-family:var(--mono);font-size:10px;color:var(--ink-4)">HACE 21 DÍAS</span></div>
+          <h4>Promo del <em>after work</em></h4>
+          <div class="preview"><div class="bub">Jueves after-work 🍷 2×1 en vinos de 19-21h. Cuéntale a un amigo y os sumamos <b>+20 puntos</b> a los dos.</div></div>
+          <div class="camp-stats">
+            <div><div class="m">ENVIADOS</div><div class="v">212</div></div>
+            <div><div class="m">ABIERTOS</div><div class="v"><em>197</em></div></div>
+            <div><div class="m">VOLVIERON</div><div class="v"><em>64</em></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ REACTIVATION PAGE ═══ -->
+    <section class="page" id="page-reactivation">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> AUTOMATIZACIÓN · IA</div>
+          <h1>La IA que <em>trabaja</em><br>mientras tú duermes.</h1>
+          <p class="sub">Reglas que se disparan solas cuando un cliente cumple un patrón. Tú defines el "cuando" y el "qué"; la IA se ocupa del resto.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost">Ver histórico</button><button class="btn btn-dark">+ Crear regla</button></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> REGLAS ACTIVAS</div><div class="v">6</div><div class="d">de 9 disponibles</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> DISPARADAS ESTE MES</div><div class="v">247</div><div class="d up"><span class="arr">↗</span> +42 vs febrero</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> CLIENTES RECUPERADOS</div><div class="v"><em>43</em></div><div class="d up"><span class="arr">↗</span> ratio 38%</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> ROI ATRIBUIDO</div><div class="v">1.247<sup>€</sup></div><div class="d up"><span class="arr">↗</span> de caja adicional</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch"></div>
+        <div class="rule-body">
+          <h4>Cliente <em>dormido</em> · 21 días sin venir</h4>
+          <p>Si un cliente regular no viene en 21 días, le enviamos un mensaje con un incentivo personalizado (café o bebida por la casa) generado por IA según su historial.</p>
+          <div class="rule-chips"><span class="rule-chip">SI → sin visitas <b>&gt;21d</b></span><span class="rule-chip">ENTONCES → WhatsApp con IA</span><span class="rule-chip">INCENTIVO → <b>café gratis</b></span><span class="rule-chip">LÍMITE → <b>1×/mes</b></span></div>
+        </div>
+        <div class="rule-stats"><div class="v"><em>43</em></div><div class="l">reactivados / mes</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch"></div>
+        <div class="rule-body">
+          <h4>A <em>un paso</em> del siguiente premio</h4>
+          <p>Cuando un cliente llega al 85% de puntos para su siguiente recompensa, le enviamos un mensaje sutil recordándoselo.</p>
+          <div class="rule-chips"><span class="rule-chip">SI → puntos <b>≥85%</b></span><span class="rule-chip">ENTONCES → recordatorio</span><span class="rule-chip">FRECUENCIA → <b>1×</b></span></div>
+        </div>
+        <div class="rule-stats"><div class="v"><em>87%</em></div><div class="l">ratio de vuelta</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch"></div>
+        <div class="rule-body">
+          <h4>Mensaje de <em>cumpleaños</em></h4>
+          <p>Regalo automático el día del cumple: café por la casa + 50 puntos extra.</p>
+          <div class="rule-chips"><span class="rule-chip">SI → es el cumpleaños</span><span class="rule-chip">ENTONCES → felicitación + regalo</span><span class="rule-chip">HORA → <b>10:00</b></span></div>
+        </div>
+        <div class="rule-stats"><div class="v">68%</div><div class="l">vienen a canjear</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch"></div>
+        <div class="rule-body">
+          <h4>Bienvenida al <em>nuevo cliente</em></h4>
+          <p>Primera visita: saludo, explicación del programa y 10% de descuento en la segunda visita.</p>
+          <div class="rule-chips"><span class="rule-chip">SI → primera visita</span><span class="rule-chip">ENTONCES → onboarding</span><span class="rule-chip">INCENTIVO → <b>−10% 2ª visita</b></span></div>
+        </div>
+        <div class="rule-stats"><div class="v">61%</div><div class="l">vuelven la 2ª vez</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch off"></div>
+        <div class="rule-body">
+          <h4>Alerta de <em>riesgo de fuga</em></h4>
+          <p>Detecta caídas de frecuencia en clientes habituales y te avisa antes de que dejen de venir. (Desactivada: requiere revisión.)</p>
+          <div class="rule-chips"><span class="rule-chip">SI → frecuencia cae <b>&gt;40%</b></span><span class="rule-chip">ENTONCES → notificar al dueño</span></div>
+        </div>
+        <div class="rule-stats"><div class="v" style="color:var(--ink-4)">—</div><div class="l">desactivada</div></div>
+      </div>
+
+      <div class="rule">
+        <div class="rule-switch"></div>
+        <div class="rule-body">
+          <h4>Aniversario del <em>cliente</em></h4>
+          <p>Un año desde su primera visita: mensaje de gracias + bebida gratis.</p>
+          <div class="rule-chips"><span class="rule-chip">SI → <b>1 año</b> de alta</span><span class="rule-chip">ENTONCES → gracias + regalo</span></div>
+        </div>
+        <div class="rule-stats"><div class="v">12</div><div class="l">disparadas / mes</div></div>
+      </div>
+    </section>
+
+    <!-- ═══ REWARDS PAGE ═══ -->
+    <section class="page" id="page-rewards">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> PROGRAMA DE PUNTOS</div>
+          <h1>Las <em>recompensas</em> que mueven a tus clientes.</h1>
+          <p class="sub">1€ gastado = 2 puntos. Define las recompensas, la IA hace el resto.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost">Editar reglas de puntos</button><button class="btn btn-dark">+ Nueva recompensa</button></div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> RECOMPENSAS ACTIVAS</div><div class="v">5</div><div class="d">3 de baja · 8 históricas</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> PUNTOS CANJEADOS · MES</div><div class="v"><em>3.240</em></div><div class="d up"><span class="arr">↗</span> +18% vs feb</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> CANJES · MES</div><div class="v">42</div><div class="d">€312 de valor regalado</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> ROI DEL PROGRAMA</div><div class="v">4,8<sup>×</sup></div><div class="d up"><span class="arr">↗</span> €1 invertido → €4,8 caja</div></div>
+      </div>
+
+      <div class="reward-grid">
+        <div class="reward">
+          <div class="ic">☕</div>
+          <h4>Café por <em>la casa</em></h4>
+          <p>La recompensa estrella. La más canjeada y la más compartida por los clientes en sus stories.</p>
+          <div class="cost"><b>100 PUNTOS</b> · VALOR 1,80€</div>
+          <div class="claimed"><span>CANJES · MES</span><b>24</b></div>
+        </div>
+        <div class="reward">
+          <div class="ic">🥐</div>
+          <h4>Tostada <em>con aguacate</em></h4>
+          <p>Perfecta para el brunch. Muy pedida los sábados por la mañana.</p>
+          <div class="cost"><b>250 PUNTOS</b> · VALOR 4,50€</div>
+          <div class="claimed"><span>CANJES · MES</span><b>8</b></div>
+        </div>
+        <div class="reward">
+          <div class="ic">🍹</div>
+          <h4>Cóctel de la <em>casa</em></h4>
+          <p>Solo de jueves a sábado. Aperol spritz o gin de la casa.</p>
+          <div class="cost"><b>400 PUNTOS</b> · VALOR 7€</div>
+          <div class="claimed"><span>CANJES · MES</span><b>6</b></div>
+        </div>
+        <div class="reward">
+          <div class="ic">❁</div>
+          <h4>Mesa <em>reservada</em> viernes</h4>
+          <p>La preferencia más pedida. Los VIP pueden reservar con 24h.</p>
+          <div class="cost"><b>200 PUNTOS</b> · VALOR PRIORIDAD</div>
+          <div class="claimed"><span>CANJES · MES</span><b>3</b></div>
+        </div>
+        <div class="reward">
+          <div class="ic">✦</div>
+          <h4>Menú del día <em>gratis</em></h4>
+          <p>Premio gordo. Solo lo canjean los VIP más fieles.</p>
+          <div class="cost"><b>1.000 PUNTOS</b> · VALOR 14€</div>
+          <div class="claimed"><span>CANJES · MES</span><b>1</b></div>
+        </div>
+        <div class="reward" style="background:var(--paper-2);border-style:dashed">
+          <div class="ic" style="color:var(--ink-4)">+</div>
+          <h4 style="color:var(--ink-4)">Añadir recompensa</h4>
+          <p>Piensa en algo que tu cliente VIP pediría con orgullo. La IA te sugiere 3 ideas si le das un tema.</p>
+          <div class="cost" style="background:#fff"><b style="color:var(--ink-4)">CREAR</b></div>
+          <div class="claimed"><span>IDEAS IA</span><b style="color:var(--green-deep)">3 NUEVAS</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ANALYTICS PAGE ═══ -->
+    <section class="page" id="page-analytics">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> ANALÍTICA · ÚLTIMOS 90 DÍAS</div>
+          <h1>Los números, <em>sin humo</em>.</h1>
+          <p class="sub">Solo lo que de verdad mueve la caja. Si un número no te dice qué hacer mañana, lo quitamos.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost">Período · 90D</button><button class="btn btn-dark">Exportar PDF</button></div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> CLIENTES NUEVOS</div><div class="v">127</div><div class="d up"><span class="arr">↗</span> +34% vs trimestre</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> RECURRENTES</div><div class="v">385</div><div class="d up"><span class="arr">↗</span> tasa repetición 63%</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> PUNTOS CANJEADOS</div><div class="v">8.974</div><div class="d up"><span class="arr">↗</span> +22% vs Q anterior</div></div>
+        <div class="card kpi"><div class="ttl"><span class="dot"></span> APERTURA WHATSAPP</div><div class="v"><em>91%</em></div><div class="d">MEDIA TRIMESTRE</div></div>
+      </div>
+
+      <div class="big-chart">
+        <div class="chart-ttl">
+          <div>
+            <div class="ttl"><span class="dot"></span> NUEVOS VS RECURRENTES · 90D</div>
+            <div class="metrics">
+              <div>Nuevos<b>127</b></div>
+              <div>Recurrentes<b><em>385</em></b></div>
+              <div>Ratio<b><em>75%</em></b></div>
+            </div>
+          </div>
+          <div class="tabs"><button>7D</button><button>30D</button><button class="active">90D</button></div>
+        </div>
+        <svg viewBox="0 0 1000 280" style="width:100%;height:280px" preserveAspectRatio="none">
+          <g stroke="#dcd9cc" stroke-dasharray="2 4">
+            <line x1="0" y1="70" x2="1000" y2="70"/>
+            <line x1="0" y1="140" x2="1000" y2="140"/>
+            <line x1="0" y1="210" x2="1000" y2="210"/>
+          </g>
+          <!-- stacked bars: recurring (green) + new (blue) -->
+          <g>
+            <!-- 13 week bars -->
+            <g transform="translate(30, 0)">
+              <rect x="0" y="160" width="40" height="80" fill="var(--green)" rx="3"/><rect x="0" y="140" width="40" height="20" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(100, 0)">
+              <rect x="0" y="150" width="40" height="90" fill="var(--green)" rx="3"/><rect x="0" y="125" width="40" height="25" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(170, 0)">
+              <rect x="0" y="140" width="40" height="100" fill="var(--green)" rx="3"/><rect x="0" y="115" width="40" height="25" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(240, 0)">
+              <rect x="0" y="120" width="40" height="120" fill="var(--green)" rx="3"/><rect x="0" y="95" width="40" height="25" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(310, 0)">
+              <rect x="0" y="130" width="40" height="110" fill="var(--green)" rx="3"/><rect x="0" y="105" width="40" height="25" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(380, 0)">
+              <rect x="0" y="110" width="40" height="130" fill="var(--green)" rx="3"/><rect x="0" y="80" width="40" height="30" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(450, 0)">
+              <rect x="0" y="100" width="40" height="140" fill="var(--green)" rx="3"/><rect x="0" y="70" width="40" height="30" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(520, 0)">
+              <rect x="0" y="95" width="40" height="145" fill="var(--green)" rx="3"/><rect x="0" y="62" width="40" height="33" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(590, 0)">
+              <rect x="0" y="85" width="40" height="155" fill="var(--green)" rx="3"/><rect x="0" y="52" width="40" height="33" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(660, 0)">
+              <rect x="0" y="80" width="40" height="160" fill="var(--green)" rx="3"/><rect x="0" y="45" width="40" height="35" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(730, 0)">
+              <rect x="0" y="70" width="40" height="170" fill="var(--green)" rx="3"/><rect x="0" y="38" width="40" height="32" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(800, 0)">
+              <rect x="0" y="60" width="40" height="180" fill="var(--green)" rx="3"/><rect x="0" y="28" width="40" height="32" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(870, 0)">
+              <rect x="0" y="55" width="40" height="185" fill="var(--green-deep)" rx="3"/><rect x="0" y="22" width="40" height="33" fill="var(--blue)" rx="3"/>
+            </g>
+            <g transform="translate(940, 0)">
+              <rect x="0" y="45" width="40" height="195" fill="var(--green-deep)" rx="3"/><rect x="0" y="15" width="40" height="30" fill="var(--blue)" rx="3"/>
+            </g>
+          </g>
+          <g font-family="'JetBrains Mono',monospace" font-size="10" fill="#6b7570">
+            <text x="30" y="265">S01</text><text x="240" y="265">S04</text><text x="450" y="265">S07</text><text x="660" y="265">S10</text><text x="870" y="265">S13</text>
+          </g>
+        </svg>
+        <div class="legend"><span><span class="legend-dot" style="background:var(--green)"></span>Visitas de recurrentes</span><span><span class="legend-dot" style="background:var(--blue)"></span>Primeras visitas</span></div>
+      </div>
+
+      <div class="main-grid">
+        <div class="card">
+          <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> DESGLOSE DE CAJA · WHATSLOYALTY</div>
+          <table class="tbl">
+            <thead><tr><th>FUENTE</th><th>IMPORTE</th><th>% TOTAL</th></tr></thead>
+            <tbody>
+              <tr><td>Reactivación automática (IA)</td><td><b>€1.247</b></td><td><div class="bar"><div class="bar-fill" style="width:45%"></div></div></td></tr>
+              <tr><td>Campaña "Nueva carta"</td><td><b>€982</b></td><td><div class="bar"><div class="bar-fill" style="width:36%"></div></div></td></tr>
+              <tr><td>Campaña "After work"</td><td><b>€512</b></td><td><div class="bar"><div class="bar-fill" style="width:19%"></div></div></td></tr>
+              <tr><td>Recordatorios de puntos</td><td><b>€348</b></td><td><div class="bar"><div class="bar-fill" style="width:13%"></div></div></td></tr>
+              <tr><td>Cumpleaños</td><td><b>€124</b></td><td><div class="bar"><div class="bar-fill" style="width:5%"></div></div></td></tr>
+              <tr><td style="color:var(--ink-4)">TOTAL ATRIBUIDO</td><td><b><em style="font-style:italic;color:var(--green-deep)">€3.213</em></b></td><td style="color:var(--ink-4);font-family:var(--mono);font-size:11px">~22% DE CAJA TOTAL</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="ttl" style="margin-bottom:14px"><span class="dot"></span> HORAS MÁS ACTIVAS · MEDIA SEMANA</div>
+          <svg viewBox="0 0 400 180" style="width:100%;height:180px">
+            <g stroke="#dcd9cc" stroke-dasharray="2 4"><line x1="40" y1="40" x2="400" y2="40"/><line x1="40" y1="90" x2="400" y2="90"/><line x1="40" y1="140" x2="400" y2="140"/></g>
+            <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7570">
+              <text x="10" y="45">ALTO</text><text x="10" y="95">MED</text><text x="10" y="145">BAJO</text>
+            </g>
+            <path d="M40 140 L70 130 L100 90 L130 35 L160 50 L190 80 L220 100 L250 85 L280 70 L310 90 L340 110 L370 130" stroke="var(--green)" stroke-width="2.5" fill="none"/>
+            <path d="M40 140 L70 130 L100 90 L130 35 L160 50 L190 80 L220 100 L250 85 L280 70 L310 90 L340 110 L370 130 L370 160 L40 160 Z" fill="rgba(0,200,81,0.1)"/>
+            <g fill="var(--green-deep)">
+              <circle cx="130" cy="35" r="4"/>
+              <circle cx="280" cy="70" r="4"/>
+            </g>
+            <g font-family="'JetBrains Mono',monospace" font-size="9" fill="#6b7570">
+              <text x="60" y="175">07</text><text x="120" y="175">09</text><text x="180" y="175">12</text><text x="240" y="175">15</text><text x="300" y="175">18</text><text x="360" y="175">21</text>
+            </g>
+            <!-- tooltip -->
+            <g transform="translate(100, 8)">
+              <rect x="0" y="0" width="80" height="20" fill="#0A0F0C" rx="4"/>
+              <text x="8" y="14" font-family="'JetBrains Mono',monospace" font-size="9" fill="#00C851">08:30 · 122</text>
+            </g>
+          </svg>
+          <div class="legend" style="margin-top:6px"><span><span class="legend-dot" style="background:var(--green)"></span>Visitas / hora</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ SETTINGS PAGE ═══ -->
+    <section class="page" id="page-settings">
+      <div class="page-head">
+        <div>
+          <div class="eyebrow"><span class="dot">●</span> AJUSTES DEL LOCAL</div>
+          <h1>Tu <em>marca</em>, tus reglas.</h1>
+          <p class="sub">Personaliza lo que ven tus clientes en cada mensaje de WhatsApp: logo, nombre, tono, y cómo funciona tu programa de puntos.</p>
+        </div>
+        <div class="actbar"><button class="btn btn-ghost" id="btn-discard">Descartar</button><button class="btn btn-dark" id="btn-save">Guardar cambios</button></div>
+      </div>
+
+      <!-- Settings tabs -->
+      <div class="set-tabs" id="set-tabs">
+        <button class="active" data-tab="identity">Identidad</button>
+        <button data-tab="points">Programa de puntos</button>
+        <button data-tab="brand">Marca y tono</button>
+        <button data-tab="hours">Horario y equipo</button>
+      </div>
+
+      <div class="set-grid">
+        <!-- LEFT: form -->
+        <div class="set-form">
+
+          <!-- IDENTITY -->
+          <div class="set-pane visible" id="set-identity">
+            <div class="set-card">
+              <h3>Logo del local</h3>
+              <p class="help">Se muestra en la cabecera de cada conversación de WhatsApp. PNG o SVG con fondo transparente, mínimo 512×512px.</p>
+              <div class="logo-up">
+                <div class="logo-preview" id="logo-preview">☕</div>
+                <div>
+                  <button class="btn btn-ghost" type="button" onclick="document.getElementById('logo-file').click()">Subir archivo</button>
+                  <input type="file" id="logo-file" accept="image/*" hidden>
+                  <button class="btn btn-ghost" type="button" style="margin-left:6px">Generar con IA</button>
+                  <div class="hint">Recomendado: fondo transparente · cuadrado · max 2MB</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="set-card">
+              <h3>Información básica</h3>
+              <div class="fld"><label>Nombre del local</label><input type="text" value="Café Moreno"></div>
+              <div class="two">
+                <div class="fld"><label>Teléfono de contacto</label><input type="text" value="+34 91 447 XX XX"></div>
+                <div class="fld"><label>Número de WhatsApp Business</label><input type="text" value="+34 612 XXX XXX"><span class="verified">✓ VERIFICADO</span></div>
+              </div>
+              <div class="fld"><label>Dirección</label><input type="text" value="Calle Fuencarral 142, 28010 Madrid"></div>
+              <div class="two">
+                <div class="fld"><label>Barrio</label><input type="text" value="Chamberí"></div>
+                <div class="fld"><label>Código postal</label><input type="text" value="28010"></div>
+              </div>
+              <div class="fld"><label>Breve descripción (aparece en la ficha de WhatsApp)</label><textarea rows="2">Café de especialidad y brunch en Chamberí desde 2022.</textarea></div>
+            </div>
+          </div>
+
+          <!-- POINTS -->
+          <div class="set-pane" id="set-points">
+            <div class="set-card">
+              <h3>Cómo se ganan los puntos</h3>
+              <p class="help">Define cuántos puntos da cada euro gastado. Puedes añadir multiplicadores para días o productos concretos.</p>
+
+              <div class="ratio">
+                <div class="r-side">
+                  <div class="r-lbl">CADA</div>
+                  <div class="r-val"><input type="number" value="1" min="1">€</div>
+                </div>
+                <div class="r-eq">=</div>
+                <div class="r-side">
+                  <div class="r-lbl">DAN</div>
+                  <div class="r-val"><input type="number" value="2" min="1"> <em>pts</em></div>
+                </div>
+              </div>
+
+              <div class="note"><b>Con tu ratio actual</b> — un cliente que gasta 7€ gana 14 puntos. Con 100 puntos canjea un café gratis (valor 1,80€) — rentabilidad aprox. <b style="color:var(--green-deep)">5,5×</b>.</div>
+            </div>
+
+            <div class="set-card">
+              <h3>Multiplicadores</h3>
+              <p class="help">Momentos en los que el cliente gana el doble (o más) de puntos. Útil para llenar las horas flojas.</p>
+              <div class="mult-row">
+                <div class="mult-body"><b>Happy hour</b><span>Martes a viernes · 18:00 — 20:00</span></div>
+                <div class="mult-x">×<em>2</em></div>
+                <div class="rule-switch"></div>
+              </div>
+              <div class="mult-row">
+                <div class="mult-body"><b>Brunch de fin de semana</b><span>Sábado y domingo · 10:00 — 13:00</span></div>
+                <div class="mult-x">×<em>1,5</em></div>
+                <div class="rule-switch"></div>
+              </div>
+              <div class="mult-row">
+                <div class="mult-body"><b>Cumpleaños del cliente</b><span>Todo el día</span></div>
+                <div class="mult-x">×<em>3</em></div>
+                <div class="rule-switch"></div>
+              </div>
+              <button class="btn btn-ghost" style="margin-top:10px;width:100%;justify-content:center">+ Añadir multiplicador</button>
+            </div>
+
+            <div class="set-card">
+              <h3>Caducidad de los puntos</h3>
+              <p class="help">Los puntos sin usar caducan para incentivar a volver. También puedes desactivarlo.</p>
+              <div class="radio-list">
+                <label class="radio"><input type="radio" name="exp"> <span>Nunca caducan</span></label>
+                <label class="radio active"><input type="radio" name="exp" checked> <span><b>6 meses</b> sin actividad (recomendado)</span></label>
+                <label class="radio"><input type="radio" name="exp"> <span>12 meses sin actividad</span></label>
+                <label class="radio"><input type="radio" name="exp"> <span>Personalizado</span></label>
+              </div>
+            </div>
+          </div>
+
+          <!-- BRAND -->
+          <div class="set-pane" id="set-brand">
+            <div class="set-card">
+              <h3>Color de marca</h3>
+              <p class="help">Aparece en los botones y acentos de tus mensajes.</p>
+              <div class="colors">
+                <button class="col" style="background:#00C851" data-col="#00C851" aria-label="verde"></button>
+                <button class="col active" style="background:#3B6E4A" data-col="#3B6E4A" aria-label="verde oliva"></button>
+                <button class="col" style="background:#D97757" data-col="#D97757" aria-label="terracota"></button>
+                <button class="col" style="background:#B57537" data-col="#B57537" aria-label="mostaza"></button>
+                <button class="col" style="background:#0F2E1E" data-col="#0F2E1E" aria-label="verde botella"></button>
+                <button class="col" style="background:#1d4e7f" data-col="#1d4e7f" aria-label="azul"></button>
+                <div class="col picker"><input type="color" value="#3B6E4A"></div>
+              </div>
+            </div>
+
+            <div class="set-card">
+              <h3>Tono de voz</h3>
+              <p class="help">Cómo habla la IA en los mensajes que envía en tu nombre.</p>
+              <div class="tone-grid">
+                <label class="tone-card active"><input type="radio" name="tone" checked hidden><div class="t-ic">😄</div><div class="t-name">Cercano</div><div class="t-ex">“¡Hola Marta! Te guardamos tu mesa del miércoles 😉”</div></label>
+                <label class="tone-card"><input type="radio" name="tone" hidden><div class="t-ic">✨</div><div class="t-name">Elegante</div><div class="t-ex">“Buenas tardes, Marta. Su mesa del miércoles queda confirmada.”</div></label>
+                <label class="tone-card"><input type="radio" name="tone" hidden><div class="t-ic">🙌</div><div class="t-name">Canalla</div><div class="t-ex">“Marta, tú el miércoles a las 8 con nosotros. Mesa guardada.”</div></label>
+                <label class="tone-card"><input type="radio" name="tone" hidden><div class="t-ic">📌</div><div class="t-name">Formal</div><div class="t-ex">“Estimada Marta, confirmamos su reserva para el miércoles.”</div></label>
+              </div>
+            </div>
+
+            <div class="set-card">
+              <h3>Firma de los mensajes</h3>
+              <p class="help">Aparece al final de cada mensaje automático.</p>
+              <div class="fld"><input type="text" value="— Javi y el equipo de Café Moreno ☕"></div>
+            </div>
+          </div>
+
+          <!-- HOURS -->
+          <div class="set-pane" id="set-hours">
+            <div class="set-card">
+              <h3>Horario de apertura</h3>
+              <p class="help">Fuera de este horario, la IA no envía mensajes automáticos para no molestar.</p>
+              <div class="hours">
+                <div class="hr-row"><span>Lunes</span><input type="text" value="07:30"><span>—</span><input type="text" value="21:00"><div class="rule-switch"></div></div>
+                <div class="hr-row"><span>Martes</span><input type="text" value="07:30"><span>—</span><input type="text" value="21:00"><div class="rule-switch"></div></div>
+                <div class="hr-row"><span>Miércoles</span><input type="text" value="07:30"><span>—</span><input type="text" value="21:00"><div class="rule-switch"></div></div>
+                <div class="hr-row"><span>Jueves</span><input type="text" value="07:30"><span>—</span><input type="text" value="23:00"><div class="rule-switch"></div></div>
+                <div class="hr-row"><span>Viernes</span><input type="text" value="07:30"><span>—</span><input type="text" value="23:00"><div class="rule-switch"></div></div>
+                <div class="hr-row"><span>Sábado</span><input type="text" value="09:00"><span>—</span><input type="text" value="23:00"><div class="rule-switch"></div></div>
+                <div class="hr-row off"><span>Domingo</span><input type="text" value="09:00" disabled><span>—</span><input type="text" value="16:00" disabled><div class="rule-switch off"></div></div>
+              </div>
+            </div>
+
+            <div class="set-card">
+              <h3>Equipo con acceso</h3>
+              <p class="help">Personas que pueden entrar al dashboard y responder chats.</p>
+              <div class="team-row">
+                <div class="avatar">JM</div>
+                <div><b>Javier Moreno</b><div class="meta-line">javi@cafemoreno.es</div></div>
+                <span class="pill vip">DUEÑO</span>
+              </div>
+              <div class="team-row">
+                <div class="avatar">LR</div>
+                <div><b>Laura Rey</b><div class="meta-line">laura@cafemoreno.es</div></div>
+                <span class="pill reg">ENCARGADA</span>
+              </div>
+              <div class="team-row">
+                <div class="avatar">IS</div>
+                <div><b>Ismael Soler</b><div class="meta-line">ismael@cafemoreno.es</div></div>
+                <span class="pill new">CAMARERO</span>
+              </div>
+              <button class="btn btn-ghost" style="margin-top:10px;width:100%;justify-content:center">+ Invitar miembro</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT: live preview -->
+        <aside class="set-preview">
+          <div class="prev-sticky">
+            <div class="ttl" style="margin-bottom:12px"><span class="dot"></span> CÓMO LO VERÁ TU CLIENTE</div>
+            <div class="phone-mini">
+              <div class="phone-header" id="prev-header">
+                <div class="phone-avatar" id="prev-logo">☕</div>
+                <div>
+                  <div class="phone-name" id="prev-name">Café Moreno</div>
+                  <div class="phone-sub">en línea</div>
+                </div>
+                <div class="phone-verify">✓</div>
+              </div>
+              <div class="phone-chat">
+                <div class="bbl in">¡Hola Marta! 👋 Te has ganado <b>+14 puntos</b> con tu café de esta mañana. Total: <b>85/100</b>. Un café más y el próximo es <b>por la casa</b> ☕<span class="ts">11:42 ✓✓</span></div>
+                <div class="bbl in small-sig" id="prev-sig">— Javi y el equipo de Café Moreno ☕</div>
+                <div class="bbl out">Genial, paso esta tarde 🙌<span class="ts">11:43 ✓✓</span></div>
+              </div>
+            </div>
+            <div class="prev-note">Previsualización en tiempo real. Los cambios se aplican solo al pulsar <b>Guardar</b>.</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+  // Nav switching
+  const links = document.querySelectorAll('#nav a');
+  const pages = {
+    home: document.getElementById('page-home'),
+    segments: document.getElementById('page-segments'),
+    campaigns: document.getElementById('page-campaigns'),
+    reactivation: document.getElementById('page-reactivation'),
+    rewards: document.getElementById('page-rewards'),
+    analytics: document.getElementById('page-analytics'),
+    settings: document.getElementById('page-settings'),
+  };
+  const crumb = document.getElementById('crumb-page');
+  const labels = { home:'Home', segments:'Segmentos', campaigns:'Campañas', reactivation:'Reactivación', rewards:'Recompensas', analytics:'Analítica', settings:'Ajustes' };
+
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const p = a.dataset.page;
+      links.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+      Object.values(pages).forEach(pg => pg.classList.remove('visible'));
+      pages[p].classList.add('visible');
+      crumb.textContent = labels[p];
+      window.scrollTo({top:0, behavior:'instant'});
+      localStorage.setItem('wl_page', p);
+    });
+  });
+
+  // Variant switching (home)
+  const varBtns = document.querySelectorAll('#var-sel button');
+  const vars = {
+    exec: document.getElementById('var-exec'),
+    ops: document.getElementById('var-ops'),
+    visual: document.getElementById('var-visual'),
+  };
+  varBtns.forEach(b => {
+    b.addEventListener('click', () => {
+      varBtns.forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      Object.values(vars).forEach(v => v.classList.remove('visible'));
+      vars[b.dataset.var].classList.add('visible');
+      localStorage.setItem('wl_var', b.dataset.var);
+    });
+  });
+
+  // Rule switches
+  document.querySelectorAll('.rule-switch').forEach(s => {
+    s.addEventListener('click', () => s.classList.toggle('off'));
+  });
+
+  // Restore
+  const sp = localStorage.getItem('wl_page');
+  if (sp && pages[sp]) document.querySelector(`[data-page="${sp}"]`)?.click();
+  const sv = localStorage.getItem('wl_var');
+  if (sv && vars[sv]) document.querySelector(`[data-var="${sv}"]`)?.click();
+
+  // Settings tabs
+  const setTabs = document.querySelectorAll('#set-tabs button');
+  const setPanes = {
+    identity: document.getElementById('set-identity'),
+    points: document.getElementById('set-points'),
+    brand: document.getElementById('set-brand'),
+    hours: document.getElementById('set-hours'),
+  };
+  setTabs.forEach(b => b.addEventListener('click', () => {
+    setTabs.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    Object.values(setPanes).forEach(p => p.classList.remove('visible'));
+    setPanes[b.dataset.tab].classList.add('visible');
+  }));
+
+  // Logo upload preview
+  const logoFile = document.getElementById('logo-file');
+  const logoPreview = document.getElementById('logo-preview');
+  const prevLogo = document.getElementById('prev-logo');
+  logoFile?.addEventListener('change', e => {
+    const f = e.target.files?.[0]; if (!f) return;
+    const url = URL.createObjectURL(f);
+    logoPreview.style.backgroundImage = `url(${url})`;
+    logoPreview.textContent = '';
+    prevLogo.style.backgroundImage = `url(${url})`;
+    prevLogo.textContent = '';
+  });
+
+  // Color picker
+  document.querySelectorAll('.col[data-col]').forEach(c => {
+    c.addEventListener('click', () => {
+      document.querySelectorAll('.col').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+      const col = c.dataset.col;
+      document.getElementById('prev-header').style.background = col;
+    });
+  });
+
+  // Tone cards
+  document.querySelectorAll('.tone-card').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tone-card').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+    });
+  });
+
+  // Radio
+  document.querySelectorAll('.radio').forEach(r => {
+    r.addEventListener('click', () => {
+      document.querySelectorAll('.radio').forEach(x => x.classList.remove('active'));
+      r.classList.add('active');
+      r.querySelector('input').checked = true;
+    });
+  });
+</script>
+</body>
+</html>

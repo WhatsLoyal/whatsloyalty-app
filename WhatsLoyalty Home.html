@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WhatsLoyalty — Fideliza, reactiva y conoce a tus clientes por WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green:#00C851; --green-deep:#00a843; --green-wash:#e8fdf0;
+  --ink:#0A0F0C; --ink-2:#1a201c; --ink-3:#3d4540; --ink-4:#6b7570;
+  --paper:#F6F5F0; --paper-2:#ECEAE1; --line:#dcd9cc;
+  --serif:'Instrument Serif','Times New Roman',serif;
+  --sans:'Inter Tight',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{font-family:var(--sans);color:var(--ink);background:var(--paper);font-size:16px;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+img,svg{display:block;max-width:100%}
+
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4)}
+.eyebrow .dot{color:var(--green)}
+
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 22px;border-radius:100px;font-family:var(--sans);font-weight:500;font-size:15px;line-height:1;transition:transform .15s ease,background .15s ease,color .15s ease;white-space:nowrap}
+.btn-primary{background:var(--green);color:#04200f}
+.btn-primary:hover{background:var(--green-deep);color:#fff;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn-ghost:hover{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn-dark{background:var(--ink);color:var(--paper)}
+.btn-dark:hover{background:#000;color:#fff}
+.btn .arrow{font-family:var(--serif);font-style:italic;font-size:18px;line-height:1;margin-top:-2px}
+
+/* ── NAV ── */
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;padding:18px 40px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:rgba(246,245,240,.8);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--serif);font-size:22px;letter-spacing:-.01em}
+.brand-mark{width:26px;height:26px;border-radius:7px;background:var(--green);display:grid;place-items:center;color:#04200f;font-family:var(--sans);font-weight:700;font-size:14px}
+.brand em{font-style:italic;color:var(--green)}
+.nav-links{display:flex;gap:28px;font-size:14px;color:var(--ink-3)}
+.nav-links a:hover{color:var(--ink)}
+
+/* ── HERO ── */
+.hero{padding:40px 40px 80px;max-width:1440px;margin:0 auto}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;padding-top:40px;margin-bottom:60px;gap:40px}
+.hero-top .eyebrow-badge{display:inline-flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--line);padding:6px 14px 6px 6px;border-radius:100px;font-size:12px;color:var(--ink-3)}
+.hero-top .eyebrow-badge .pill{background:var(--green);color:#04200f;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:100px;font-weight:500}
+.hero-meta{text-align:right;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-4);line-height:1.8}
+.hero-meta span{color:var(--green)}
+
+.hero-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:60px;align-items:center}
+.hero-left h1{font-family:var(--serif);font-size:clamp(52px,7.5vw,108px);line-height:.98;letter-spacing:-.02em;font-weight:400;margin-bottom:28px}
+.hero-left h1 em{font-style:italic;color:var(--green)}
+.hero-left .lede{font-family:var(--serif);font-size:clamp(20px,2vw,26px);line-height:1.3;color:var(--ink-3);max-width:540px;margin-bottom:36px}
+.hero-left .lede b{color:var(--ink);font-weight:400;background:var(--green-wash);padding:0 6px;border-radius:4px}
+.hero-left .buttons{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap}
+.hero-left .guarantee{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-4)}
+.hero-left .guarantee span{color:var(--green)}
+
+/* ── HERO STAGE (phone only) ── */
+.stage{position:relative;min-height:640px;display:flex;align-items:center;justify-content:center;
+  background:
+    radial-gradient(circle at 70% 30%, rgba(0,200,81,.14), transparent 55%),
+    radial-gradient(circle at 20% 85%, rgba(0,200,81,.08), transparent 50%),
+    linear-gradient(180deg, #FDFCF7 0%, #F1EEE3 100%);
+  border-radius:28px; overflow:hidden;
+  border:1px solid var(--line);
+}
+/* Decorative dots pattern */
+.stage::before{content:'';position:absolute;inset:0;
+  background-image:radial-gradient(var(--line) 1px, transparent 1px);
+  background-size:22px 22px; opacity:.5; pointer-events:none}
+.stage-caption{position:absolute;left:24px;top:24px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);z-index:2}
+.stage-caption::before{content:'● ';color:var(--green)}
+
+/* Phone */
+.phone-wrap{position:relative;z-index:3;animation:floatY 6s ease-in-out infinite}
+@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.phone{
+  width:300px; background:#0a0d10;
+  border-radius:38px; padding:10px;
+  box-shadow:0 50px 100px -20px rgba(0,0,0,.45), 0 20px 40px -20px rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);
+}
+.phone-screen{background:#ECE5DA;border-radius:30px;overflow:hidden}
+.phone-notch{height:26px;display:flex;justify-content:center;align-items:flex-end;padding-bottom:4px;background:#0a0d10}
+.phone-notch .pill{width:90px;height:6px;border-radius:100px;background:rgba(255,255,255,.15)}
+.phone-status{display:flex;justify-content:space-between;padding:4px 22px 6px;font-family:var(--sans);font-size:11px;color:#fff;font-weight:500;background:#0a0d10}
+.phone-chat-header{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(0,0,0,.08);background:#00A884;color:#fff}
+.phone-back{color:#fff;font-size:18px}
+.phone-avatar{width:36px;height:36px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--green-deep);font-weight:700;font-size:14px;flex-shrink:0}
+.phone-name{color:#fff;font-size:13px;font-weight:500;line-height:1.1}
+.phone-sub{color:rgba(255,255,255,.8);font-size:10px}
+.phone-verify{margin-left:auto;width:16px;height:16px;border-radius:50%;background:#fff;display:grid;place-items:center;color:var(--green-deep);font-size:10px;font-weight:700}
+
+.phone-conv{padding:14px 12px 20px;display:flex;flex-direction:column;gap:6px;min-height:360px;background:#DDD5C7;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='60' height='60' viewBox='0 0 60 60'><g fill='%23C6BFB0' fill-opacity='0.35'><path d='M12 18c2-3 5-3 7 0s2 6 0 7-5 0-7-2-2-3 0-5zM36 10c3-1 6 1 6 4s-2 5-5 5-5-2-5-5 1-3 4-4zM46 34c2 2 2 6 0 8s-6 1-7-2 0-6 3-7 3-1 4 1zM18 42c3-2 7-1 8 2s-1 7-4 8-7-1-7-4 0-4 3-6zM30 26c1-1 4-1 5 0s1 3 0 4-4 1-5 0-1-3 0-4z'/></g></svg>")}
+.bbl{max-width:85%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4;position:relative;animation:popIn .4s ease backwards;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.bbl.in{background:#fff;color:#111;border-bottom-left-radius:4px;align-self:flex-start}
+.bbl.out{background:#DCF8C6;color:#111;border-bottom-right-radius:4px;align-self:flex-end;font-weight:500}
+.bbl.out::after{content:'✓✓';font-size:10px;margin-left:6px;color:#34b7f1}
+.bbl b{font-weight:600}
+.bbl.in b{color:var(--green-deep)}
+.bbl .ts{display:block;font-size:9px;margin-top:4px;text-align:right;color:#8a8a8a}
+.bbl:nth-child(1){animation-delay:.6s}
+.bbl:nth-child(2){animation-delay:1.1s}
+.bbl:nth-child(3){animation-delay:1.6s}
+.bbl:nth-child(4){animation-delay:2.1s}
+.bbl:nth-child(5){animation-delay:2.6s}
+@keyframes popIn{from{opacity:0;transform:translateY(6px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.points-card{background:#fff;border:1px solid rgba(0,200,81,.3);border-radius:12px;padding:12px;margin:2px 0;color:#111;align-self:stretch;animation:popIn .4s ease backwards;animation-delay:1.4s;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+.points-card .pt-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--green-deep);margin-bottom:4px}
+.points-card .pt-num{font-family:var(--serif);font-size:28px;font-weight:400;line-height:1;margin-bottom:2px;color:#111}
+.points-card .pt-bar{margin-top:8px;height:4px;background:#e9e5d6;border-radius:100px;overflow:hidden}
+.points-card .pt-fill{height:100%;width:85%;background:var(--green);border-radius:100px}
+.points-card .pt-meta{font-size:10px;color:#555;margin-top:6px}
+
+/* Floating chips around phone */
+.chip{position:absolute;background:#fff;border:1px solid var(--line);border-radius:100px;padding:10px 16px 10px 10px;font-size:13px;display:flex;align-items:center;gap:10px;box-shadow:0 10px 30px -10px rgba(0,0,0,.15);z-index:4;white-space:nowrap}
+.chip .ic{width:28px;height:28px;border-radius:50%;background:var(--green-wash);border:1px solid rgba(0,200,81,.25);display:grid;place-items:center;color:var(--green-deep);font-family:var(--serif);font-style:italic;font-size:16px;font-weight:600}
+.chip b{font-weight:500;color:var(--ink)}
+.chip span{color:var(--ink-4);font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+.chip-1{top:10%;left:6%;animation:floatY 5s ease-in-out infinite}
+.chip-2{top:50%;left:2%;animation:floatY 4.5s ease-in-out infinite 1s}
+.chip-3{bottom:10%;right:6%;animation:floatY 6s ease-in-out infinite .5s}
+.chip-4{top:16%;right:4%;animation:floatY 5.5s ease-in-out infinite .3s}
+
+/* ── MARQUEE ── */
+.marquee{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;overflow:hidden;white-space:nowrap;background:var(--paper)}
+.marquee-inner{display:inline-flex;gap:60px;animation:mv 45s linear infinite;font-family:var(--serif);font-size:26px;color:var(--ink)}
+.marquee-inner span{display:inline-flex;align-items:center;gap:60px}
+.marquee-inner em{font-style:italic;color:var(--green)}
+.marquee-inner .sep{color:var(--ink-4);font-family:var(--sans);font-size:10px}
+@keyframes mv{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── LOGOS STRIP ── */
+.logos{padding:32px 40px;background:#fff;border-bottom:1px solid var(--line)}
+.logos-inner{max-width:1440px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap}
+.logos-inner .tag{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-4);flex-shrink:0}
+.logo-ph{font-family:var(--serif);font-size:22px;color:var(--ink-4);letter-spacing:-.01em;font-style:italic;opacity:.7}
+
+/* ── PILLARS (3) ── */
+.pillars{padding:120px 40px;max-width:1440px;margin:0 auto}
+.pillars-head{display:grid;grid-template-columns:1fr 2fr;gap:60px;margin-bottom:60px;align-items:end}
+.pillars-head h2{font-family:var(--serif);font-size:clamp(44px,5.5vw,80px);line-height:1;letter-spacing:-.02em;font-weight:400}
+.pillars-head h2 em{font-style:italic;color:var(--green)}
+.pillars-head p{font-size:17px;color:var(--ink-3);max-width:440px;line-height:1.55}
+
+.p-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--ink)}
+.pillar{padding:40px 32px 40px 0;border-right:1px solid var(--line);min-height:440px;display:flex;flex-direction:column;position:relative}
+.pillar:nth-child(2){padding-left:32px}
+.pillar:nth-child(3){padding-left:32px;border-right:none}
+.pillar .num{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--green);margin-bottom:60px}
+.pillar h3{font-family:var(--serif);font-size:44px;font-weight:400;line-height:1;letter-spacing:-.02em;margin-bottom:18px}
+.pillar h3 em{font-style:italic;color:var(--green)}
+.pillar p{font-size:15px;color:var(--ink-3);line-height:1.6;margin-bottom:24px;flex-grow:1}
+.pillar .demo{background:var(--paper-2);border-radius:10px;padding:14px;border:1px solid var(--line)}
+.pillar .demo .bubble{background:var(--green-wash);border:1px solid rgba(0,200,81,.2);color:var(--ink);padding:10px 12px;border-radius:10px 10px 10px 2px;margin-bottom:6px;font-size:12.5px;line-height:1.4}
+.pillar .demo .meta{color:var(--ink-4);font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.pillar .demo .meta.right{text-align:right;margin-top:6px}
+.pillar .demo b{font-weight:600}
+.pillar .seg-row{display:flex;justify-content:space-between;padding:6px 0;font-size:12.5px;color:var(--ink-3);border-bottom:1px solid var(--line)}
+.pillar .seg-row:last-child{border-bottom:none}
+.pillar .seg-row b{color:var(--ink);font-weight:500}
+
+/* ── CONTRAST ── */
+.contrast{background:#E8E3D3;color:var(--ink);padding:120px 40px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.contrast-inner{max-width:1200px;margin:0 auto}
+.contrast h2{font-family:var(--serif);font-size:clamp(44px,6vw,88px);line-height:1;letter-spacing:-.02em;font-weight:400;margin-bottom:56px;max-width:940px}
+.contrast h2 em{font-style:italic;color:var(--green-deep)}
+.contrast h2 s{text-decoration:line-through;text-decoration-thickness:2px;color:rgba(10,15,12,.3)}
+.c-table{display:grid;grid-template-columns:1fr 1fr;gap:0;border-top:1px solid rgba(10,15,12,.18)}
+.c-col{padding:30px 0;border-bottom:1px solid rgba(10,15,12,.12)}
+.c-col.old{padding-right:40px;color:rgba(10,15,12,.45)}
+.c-col.new{padding-left:40px;border-left:1px solid rgba(10,15,12,.18)}
+.c-col .label{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}
+.c-col.old .label{color:rgba(10,15,12,.45)}
+.c-col.new .label{color:var(--green-deep)}
+.c-col .line{font-family:var(--serif);font-size:22px;line-height:1.3}
+.c-col.new em{font-style:italic;color:var(--green-deep)}
+
+/* ── NUMBERS ── */
+.numbers{background:var(--green-wash);padding:80px 40px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.numbers-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:40px}
+.ncell .k{font-family:var(--serif);font-size:clamp(48px,5vw,76px);line-height:1;letter-spacing:-.02em;font-weight:400;color:var(--ink);margin-bottom:8px}
+.ncell .k em{font-style:italic;color:var(--green-deep)}
+.ncell .l{font-size:14px;color:var(--ink-3);line-height:1.4;max-width:220px}
+
+/* ── HUMAN SECTION ── */
+.human{padding:120px 40px;background:var(--paper);border-top:1px solid var(--line)}
+.human-inner{max-width:1440px;margin:0 auto;display:grid;grid-template-columns:1.05fr 1fr;gap:80px;align-items:center}
+.human-photo{position:relative;aspect-ratio:4/5;min-height:560px}
+.photo-frame{position:absolute;inset:0;border-radius:20px;overflow:hidden;
+  background-color:var(--paper-2);
+  background-image:url('https://images.unsplash.com/photo-1512316609839-ce289d3eba0a?auto=format&fit=crop&w=900&q=80');
+  background-size:cover;background-position:center top;
+  box-shadow:0 40px 80px -30px rgba(10,15,12,.3), 0 20px 40px -20px rgba(10,15,12,.15);
+}
+.photo-caption{position:absolute;left:18px;bottom:18px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#fff;z-index:3;background:rgba(10,15,12,.55);padding:6px 10px;border-radius:100px;backdrop-filter:blur(6px)}
+
+.ann{position:absolute;z-index:4;display:flex;align-items:center;gap:14px}
+.ann-a{top:18%;left:-20px;transform:translateX(-90%);flex-direction:row-reverse}
+.ann-a .ann-line{width:70px;height:1px;background:var(--ink);position:relative}
+.ann-a .ann-line::before{content:'';position:absolute;right:-6px;top:50%;transform:translateY(-50%);width:8px;height:8px;border-radius:50%;background:var(--green)}
+.ann-bubble{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 20px 40px -20px rgba(10,15,12,.2);min-width:220px;display:flex;flex-direction:column;gap:4px}
+.ann-bubble.small{min-width:0;padding:10px 14px}
+.ann-bubble .ann-label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4)}
+.ann-bubble b{font-family:var(--serif);font-size:22px;font-weight:400;line-height:1.1;letter-spacing:-.01em;color:var(--ink)}
+.ann-bubble .ann-meta{font-size:12px;color:var(--ink-3)}
+.ann-b{bottom:6%;left:-20px;transform:translateX(-50%)}
+
+.human-text h2{font-family:var(--serif);font-size:clamp(44px,5vw,76px);line-height:1;letter-spacing:-.02em;font-weight:400;margin:16px 0 22px}
+.human-text h2 em{font-style:italic;color:var(--green)}
+.lede-sm{font-size:18px;color:var(--ink-3);line-height:1.55;margin-bottom:32px;max-width:480px}
+.lede-sm b{color:var(--ink);font-weight:500;background:var(--green-wash);padding:0 4px;border-radius:3px}
+.human-list{list-style:none;border-top:1px solid var(--line);margin-bottom:36px}
+.human-list li{display:grid;grid-template-columns:80px 1fr;gap:20px;align-items:baseline;padding:18px 0;border-bottom:1px solid var(--line)}
+.human-list .k{font-family:var(--serif);font-size:46px;line-height:1;color:var(--green);font-style:italic;font-weight:400}
+.human-list .v{font-size:15px;color:var(--ink-3);line-height:1.4}
+@media (max-width:960px){.human{padding:60px 20px}.human-inner{grid-template-columns:1fr;gap:40px}.human-photo{min-height:440px}.ann-a{left:10px;top:10px;transform:none;flex-direction:row}.ann-a .ann-line{display:none}.ann-b{left:10px;bottom:10px;transform:none}}
+
+/* ── HOW ── */
+.how{padding:120px 40px;max-width:1440px;margin:0 auto}
+.how-head{margin-bottom:50px;max-width:780px}
+.how-head h2{font-family:var(--serif);font-size:clamp(44px,5vw,72px);line-height:1;font-weight:400;letter-spacing:-.02em;margin:14px 0 16px}
+.how-head h2 em{font-style:italic;color:var(--green)}
+.how-head p{font-size:17px;color:var(--ink-3)}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.stp{padding:28px 24px;border:1px solid var(--line);border-radius:16px;background:#fff;display:flex;flex-direction:column;min-height:260px}
+.stp .n{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--green);margin-bottom:40px}
+.stp h4{font-family:var(--serif);font-size:26px;font-weight:400;line-height:1.1;letter-spacing:-.01em;margin-bottom:10px}
+.stp h4 em{font-style:italic;color:var(--green)}
+.stp p{font-size:14px;color:var(--ink-3);line-height:1.5}
+
+/* ── PRICING ── */
+.pricing{padding:120px 40px;max-width:1200px;margin:0 auto}
+.pricing-head{text-align:center;margin-bottom:60px}
+.pricing-head h2{font-family:var(--serif);font-size:clamp(44px,5vw,72px);line-height:1;font-weight:400;letter-spacing:-.02em;margin:14px 0 14px}
+.pricing-head h2 em{font-style:italic;color:var(--green)}
+.pricing-head p{font-size:17px;color:var(--ink-3);max-width:500px;margin:0 auto}
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:#fff}
+.plan{padding:40px 32px;border-right:1px solid var(--line);display:flex;flex-direction:column}
+.plan:last-child{border-right:none}
+.plan.feat{background:var(--ink);color:var(--paper);position:relative}
+.plan.feat .tag{position:absolute;top:20px;right:20px;font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;background:var(--green);color:#04200f;padding:4px 10px;border-radius:100px}
+.plan .pname{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-4);margin-bottom:20px}
+.plan.feat .pname{color:rgba(255,255,255,.6)}
+.plan .price{font-family:var(--serif);font-size:56px;line-height:1;font-weight:400;letter-spacing:-.02em;margin-bottom:4px}
+.plan .price sup{font-size:20px;vertical-align:super;color:var(--ink-4);font-family:var(--sans);font-weight:400}
+.plan.feat .price{color:var(--green)}
+.plan .per{font-size:13px;color:var(--ink-4);margin-bottom:24px}
+.plan.feat .per{color:rgba(255,255,255,.5)}
+.plan .desc{font-size:14px;color:var(--ink-3);line-height:1.5;padding-bottom:24px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.plan.feat .desc{color:rgba(255,255,255,.65);border-bottom-color:rgba(255,255,255,.1)}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:10px;font-size:13.5px;flex-grow:1;margin-bottom:28px}
+.plan li{display:flex;gap:10px;align-items:flex-start;color:var(--ink-3)}
+.plan.feat li{color:rgba(255,255,255,.8)}
+.plan li::before{content:'→';color:var(--green);font-family:var(--serif);font-style:italic;flex-shrink:0}
+
+/* ── FAQ ── */
+.faq{padding:120px 40px;max-width:1200px;margin:0 auto;border-top:1px solid var(--line)}
+.faq-grid{display:grid;grid-template-columns:1fr 2fr;gap:80px;align-items:start}
+.faq-head h2{font-family:var(--serif);font-size:clamp(44px,5vw,72px);line-height:1;font-weight:400;letter-spacing:-.02em;margin:14px 0 16px}
+.faq-head h2 em{font-style:italic;color:var(--green)}
+.faq-head p{font-size:15px;color:var(--ink-3);line-height:1.6}
+.qa{border-top:1px solid var(--line);padding:22px 0;cursor:pointer}
+.qa:last-child{border-bottom:1px solid var(--line)}
+.qa summary{list-style:none;display:flex;justify-content:space-between;align-items:flex-start;gap:20px;font-family:var(--serif);font-size:22px;line-height:1.25;font-weight:400}
+.qa summary::-webkit-details-marker{display:none}
+.qa .plus{font-family:var(--mono);color:var(--green);font-size:18px;flex-shrink:0;margin-top:4px;transition:transform .2s}
+.qa[open] .plus{transform:rotate(45deg)}
+.qa .a{font-size:15px;color:var(--ink-3);line-height:1.6;padding-top:14px;max-width:640px}
+
+/* ── FINAL CTA ── */
+.final{padding:120px 40px;text-align:center;background:#0F2E1E;color:var(--paper);position:relative;overflow:hidden}
+.final::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 0%, rgba(0,200,81,.18), transparent 60%);pointer-events:none}
+.final > *{position:relative;z-index:1}
+.final h2{font-family:var(--serif);font-size:clamp(54px,8vw,120px);line-height:.95;font-weight:400;letter-spacing:-.03em;max-width:1100px;margin:0 auto 36px}
+.final h2 em{font-style:italic;color:var(--green)}
+.final .buttons{display:inline-flex;gap:10px}
+.final .micro{font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.12em;margin-top:28px}
+
+/* ── FOOTER ── */
+.ft{background:#070a08;color:rgba(255,255,255,.7);padding:80px 40px 40px}
+.ft-inner{max-width:1300px;margin:0 auto;display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px}
+.ft h5{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:rgba(255,255,255,.4);margin-bottom:18px;font-weight:500}
+.ft ul{list-style:none;display:flex;flex-direction:column;gap:10px;font-size:14px}
+.ft ul a:hover{color:var(--green)}
+.ft-brand .brand{color:#fff;font-size:28px;margin-bottom:14px}
+.ft-brand p{font-size:14px;color:rgba(255,255,255,.55);max-width:300px;line-height:1.6}
+.ft-bottom{max-width:1300px;margin:60px auto 0;padding-top:24px;border-top:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em}
+
+@media (max-width:960px){
+  .nav{padding:14px 20px} .nav-links{display:none}
+  .hero{padding:20px 20px 60px}
+  .hero-top{flex-direction:column;gap:20px;padding-top:20px;margin-bottom:30px}
+  .hero-meta{text-align:left}
+  .hero-grid{grid-template-columns:1fr;gap:30px}
+  .stage{min-height:520px}
+  .phone-wrap{right:auto;left:50%;transform:translateX(-50%);bottom:-40px}
+  .chip-1,.chip-2{display:none}
+  .pillars,.how,.pricing,.faq,.contrast,.final{padding:60px 20px}
+  .pillars-head,.faq-grid{grid-template-columns:1fr;gap:30px}
+  .p-grid,.plans,.c-table,.steps,.ft-inner{grid-template-columns:1fr}
+  .pillar,.plan{border-right:none;border-bottom:1px solid var(--line)}
+  .numbers-inner{grid-template-columns:1fr 1fr;gap:24px}
+  .c-col.new{padding-left:0;border-left:none;padding-top:20px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="#" class="brand"><span class="brand-mark">W</span> Whats<em>Loyalty</em></a>
+  <div class="nav-links">
+    <a href="#how">Cómo funciona</a>
+    <a href="#features">Producto</a>
+    <a href="#pricing">Precios</a>
+    <a href="#faq">FAQ</a>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <a href="#" style="font-size:14px;color:var(--ink-3)">Entrar</a>
+    <a href="#pricing" class="btn btn-dark">Probar gratis <span class="arrow">→</span></a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-top">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div class="eyebrow-badge"><span class="pill">NUEVO</span> Ahora con IA para reactivar clientes dormidos</div>
+    </div>
+    <div class="hero-meta">
+      MADRID — 2026<br>
+      <span>●</span> DISPONIBLE EN ESPAÑA<br>
+      DESDE 29,99 €/MES
+    </div>
+  </div>
+
+  <div class="hero-grid">
+    <div class="hero-left">
+      <h1>Fideliza. <em>Reactiva.</em><br>Conoce a tus clientes.</h1>
+      <p class="lede">El programa de fidelidad que vive en <b>WhatsApp</b> — sin apps, sin tarjetas, sin fricción. El canal que tus clientes ya usan 23 veces al día.</p>
+      <div class="buttons">
+        <a href="#pricing" class="btn btn-primary">Empezar 14 días gratis <span class="arrow">→</span></a>
+        <a href="#how" class="btn btn-ghost">Ver cómo funciona</a>
+      </div>
+      <div class="guarantee"><span>●</span> 29,99 €/MES · SIN PERMANENCIA · CANCELA CUANDO QUIERAS</div>
+    </div>
+
+    <div class="stage">
+      <span class="stage-caption">Conversación real · Café Moreno</span>
+
+      <div class="chip chip-1"><span class="ic">+</span><b>+15 puntos</b> <span>COMPRA 6,80€</span></div>
+      <div class="chip chip-2"><span class="ic">★</span><b>VIP detectado</b> <span>&gt;40€/mes</span></div>
+      <div class="chip chip-3"><span class="ic">↻</span><b>Reactivada</b> <span>24 días sin verse</span></div>
+      <div class="chip chip-4"><span class="ic">✓</span><b>Leído 90%</b> <span>APERTURA MEDIA</span></div>
+
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="phone-screen">
+            <div class="phone-notch"><div class="pill"></div></div>
+            <div class="phone-status"><span>9:41</span><span>●●●● 5G</span></div>
+            <div class="phone-chat-header">
+              <span class="phone-back">‹</span>
+              <div class="phone-avatar">☕</div>
+              <div>
+                <div class="phone-name">Café Moreno</div>
+                <div class="phone-sub">empresa · en línea</div>
+              </div>
+              <div class="phone-verify">✓</div>
+            </div>
+            <div class="phone-conv">
+              <div class="bbl in">¡Hola Marta! ☕<br>Gracias por tu café.<br>Acabas de sumar <b>+15 puntos</b>.<span class="ts">10:42</span></div>
+              <div class="points-card">
+                <div class="pt-label">TU SALDO</div>
+                <div class="pt-num">85 / 100</div>
+                <div class="pt-bar"><div class="pt-fill"></div></div>
+                <div class="pt-meta">15 puntos más y el siguiente café va por la casa ✨</div>
+              </div>
+              <div class="bbl in">¿Nos vemos el viernes? <b>Te reservamos tu mesa</b> de siempre 🙌<span class="ts">10:43</span></div>
+              <div class="bbl out">¡Ahí estaré! Muchas gracias<span class="ts">10:45</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-inner">
+    <span>Sin apps que descargar <span class="sep">◆</span> <em>Tarjetas de papel, nunca más</em> <span class="sep">◆</span> Base de datos propia <span class="sep">◆</span> IA para reactivar <em>dormidos</em> <span class="sep">◆</span> 29,99€/mes <span class="sep">◆</span> Sin apps que descargar <span class="sep">◆</span> <em>Tarjetas de papel, nunca más</em> <span class="sep">◆</span> Base de datos propia <span class="sep">◆</span> IA para reactivar <em>dormidos</em> <span class="sep">◆</span> 29,99€/mes <span class="sep">◆</span></span>
+  </div>
+</div>
+
+<div class="logos">
+  <div class="logos-inner">
+    <span class="tag">UTILIZADO POR +300 LOCALES EN ESPAÑA</span>
+    <span class="logo-ph">Café Moreno</span>
+    <span class="logo-ph">Lombok Bar</span>
+    <span class="logo-ph">Nonna e Nipote</span>
+    <span class="logo-ph">Panadería Luz</span>
+    <span class="logo-ph">El Barril</span>
+    <span class="logo-ph">Kombu Tokio</span>
+  </div>
+</div>
+
+<section class="pillars" id="features">
+  <div class="pillars-head">
+    <span class="eyebrow"><span class="dot">●</span> TRES VERBOS</span>
+    <div><h2>Lo que hace, <em>dicho claro</em>.</h2></div>
+  </div>
+
+  <div class="p-grid">
+    <div class="pillar">
+      <span class="num">01 — FIDELIZA</span>
+      <h3><em>Fidelizas</em> sin que descarguen nada.</h3>
+      <p>Tus clientes acumulan puntos por WhatsApp. Ni apps, ni tarjetas de papel, ni códigos que nadie recuerda. Solo el número que ya tienen en el bolsillo.</p>
+      <div class="demo">
+        <div class="meta">TRAS UNA COMPRA</div>
+        <div class="bubble" style="margin-top:6px">☕ ¡Gracias por tu café, Marta! Acabas de sumar <b>+15 puntos</b>. Ya llevas <b>85/100</b> para el siguiente gratis.</div>
+        <div class="meta right">AUTOMÁTICO · 3 SEG</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <span class="num">02 — REACTIVA</span>
+      <h3>El sistema <em>trabaja solo</em>.</h3>
+      <p>Detecta quién lleva 3 semanas sin venir y le manda un incentivo personalizado. Sin que tú te acuerdes. Sin que programes nada. El feature que más ROI genera.</p>
+      <div class="demo">
+        <div class="meta">CLIENTE DETECTADO COMO "DORMIDO"</div>
+        <div class="bubble" style="margin-top:6px">Hola Javier, hace 24 días que no te vemos 👀 Te guardamos una cerveza — <b>pásate esta semana</b> y va por la casa.</div>
+        <div class="meta right">IA · GENERADO AL MOMENTO</div>
+      </div>
+    </div>
+    <div class="pillar">
+      <span class="num">03 — CONOCE</span>
+      <h3>Un <em>CRM</em> que es tuyo.</h3>
+      <p>Ticket medio, frecuencia, VIPs, clientes en riesgo. Segmentación automática. Campañas broadcast con 90% de apertura. Sin pagar a Meta por alcance.</p>
+      <div class="demo" style="padding:6px 14px 10px">
+        <div class="meta" style="padding:8px 0 6px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between"><span>SEGMENTOS</span><span style="color:var(--green)">ESTA SEMANA</span></div>
+        <div class="seg-row"><span>🟢 VIP (&gt;40€/mes)</span><b>28</b></div>
+        <div class="seg-row"><span>🔵 Regulares</span><b>186</b></div>
+        <div class="seg-row"><span>🟠 Dormidos (&gt;21d)</span><b>43</b></div>
+        <div class="seg-row"><span>⚪ Nuevos</span><b>17</b></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contrast">
+  <div class="contrast-inner">
+    <h2>Lo que antes era un <s>folleto plastificado</s>, ahora es una <em>conversación</em>.</h2>
+    <div class="c-table">
+      <div class="c-col old"><div class="label">ANTES</div><div class="line">Tarjeta de papel que el cliente pierde a la tercera visita.</div></div>
+      <div class="c-col new"><div class="label"><span style="color:var(--green)">●</span> AHORA</div><div class="line">Un WhatsApp <em>automático</em> tras cada compra.</div></div>
+      <div class="c-col old"><div class="line">App con descarga, registro, contraseña y 4 estrellas en la tienda.</div></div>
+      <div class="c-col new"><div class="line">Cero fricción: <em>el canal que ya tienen instalado</em>.</div></div>
+      <div class="c-col old"><div class="line">Instagram y Google que solo ve el 3% de tus seguidores.</div></div>
+      <div class="c-col new"><div class="line">Broadcast con <em>90% de apertura</em>. Sin algoritmo.</div></div>
+      <div class="c-col old"><div class="line">Un CRM genérico de 200€/mes que nadie del equipo abre.</div></div>
+      <div class="c-col new"><div class="line"><em>29,99 €/mes.</em> Punto.</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="numbers">
+  <div class="numbers-inner">
+    <div class="ncell"><div class="k"><em>90%</em></div><div class="l">Tasa de apertura de WhatsApp. El email hace el 20%.</div></div>
+    <div class="ncell"><div class="k"><em>3×</em></div><div class="l">Frecuencia de visita en clientes que entran al programa.</div></div>
+    <div class="ncell"><div class="k"><em>0</em></div><div class="l">Apps que tu cliente tiene que descargar. Cero.</div></div>
+    <div class="ncell"><div class="k">29,99<em>€</em></div><div class="l">Al mes. Todo incluido. Sin permanencia.</div></div>
+  </div>
+</section>
+
+<section class="human">
+  <div class="human-inner">
+    <div class="human-photo">
+      <div class="photo-frame"></div>
+      <div class="photo-caption">Marta · Madrid · cliente habitual de Café Moreno</div>
+
+      <div class="ann ann-a">
+        <div class="ann-line"></div>
+        <div class="ann-dot"></div>
+        <div class="ann-bubble">
+          <span class="ann-label">ESTÁ MIRANDO</span>
+          <b>Sus puntos en WhatsApp</b>
+          <span class="ann-meta">85/100 · 15 para el siguiente gratis</span>
+        </div>
+      </div>
+
+      <div class="ann ann-b">
+        <div class="ann-bubble small">
+          <span class="ann-label" style="color:var(--green-deep)">✓ LEÍDO</span>
+          <b>En 4 minutos</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="human-text">
+      <span class="eyebrow"><span class="dot">●</span> EL CLIENTE, POR FIN EN EL CENTRO</span>
+      <h2>A Marta <em>no le pides</em><br>que se descargue nada.</h2>
+      <p class="lede-sm">Solo le pides que siga haciendo lo que ya hace 23 veces al día: abrir WhatsApp. Sus puntos, su próximo café gratis, la reserva del viernes — <b>todo en la misma ventana</b> donde habla con su hermana.</p>
+      <ul class="human-list">
+        <li><span class="k">0</span><span class="v">apps nuevas que recordar</span></li>
+        <li><span class="k">1</span><span class="v">conversación, siempre abierta, con su local favorito</span></li>
+        <li><span class="k">∞</span><span class="v">veces que puede comprobar sus puntos sin preguntar</span></li>
+      </ul>
+      <a href="#how" class="btn btn-dark">Ver cómo se siente del otro lado <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <div class="how-head">
+    <span class="eyebrow"><span class="dot">●</span> CÓMO FUNCIONA</span>
+    <h2>En <em>10 minutos</em> tu local tiene programa de puntos.</h2>
+    <p>Sin integraciones complicadas, sin formación. Si sabes usar WhatsApp, sabes usar WhatsLoyalty.</p>
+  </div>
+  <div class="steps">
+    <div class="stp"><span class="n">01</span><h4>Das de alta tu local.</h4><p>Un formulario de 2 minutos: nombre, logo y reglas de puntos (por ejemplo, 1€ = 1 punto).</p></div>
+    <div class="stp"><span class="n">02</span><h4>Registras compras en <em>3 segundos</em>.</h4><p>El camarero introduce el teléfono del cliente y el importe. El cliente recibe el WhatsApp automático.</p></div>
+    <div class="stp"><span class="n">03</span><h4>La IA reactiva a los <em>dormidos</em>.</h4><p>Cada noche, detecta quién lleva demasiado sin venir y le envía un incentivo personalizado.</p></div>
+    <div class="stp"><span class="n">04</span><h4>Tú ves la <em>caja</em> crecer.</h4><p>Ticket medio sube, clientes repiten más. Y por primera vez sabes quién es quién.</p></div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="pricing-head">
+    <span class="eyebrow"><span class="dot">●</span> PRECIOS</span>
+    <h2>Un plan <em>claro</em>. Dos opciones para cuando crezcas.</h2>
+    <p>Empieza con 14 días de prueba gratuita. Sin tarjeta. Sin letra pequeña.</p>
+  </div>
+  <div class="plans">
+    <div class="plan">
+      <div class="pname">Starter</div>
+      <div class="price">0<sup>€</sup></div>
+      <div class="per">14 días · Sin tarjeta</div>
+      <div class="desc">Para probar con tu local antes de suscribirte. Todo funciona, sin límites.</div>
+      <ul>
+        <li>Hasta 100 clientes</li>
+        <li>Puntos automáticos</li>
+        <li>1 campaña broadcast</li>
+        <li>Panel básico</li>
+      </ul>
+      <a href="#" class="btn btn-ghost" style="width:100%;justify-content:center">Empezar gratis</a>
+    </div>
+    <div class="plan feat">
+      <div class="tag">Recomendado</div>
+      <div class="pname">Local</div>
+      <div class="price">29,99<sup>€</sup></div>
+      <div class="per">/mes · IVA incluido</div>
+      <div class="desc">El plan para el 99% de restaurantes, bares y cafeterías. Todo incluido.</div>
+      <ul>
+        <li>Clientes ilimitados</li>
+        <li>Reactivación automática con IA</li>
+        <li>Segmentación avanzada</li>
+        <li>Broadcast ilimitados</li>
+        <li>CRM completo + analytics</li>
+        <li>Soporte prioritario</li>
+      </ul>
+      <a href="#" class="btn btn-primary" style="width:100%;justify-content:center">Empezar 14 días gratis <span class="arrow">→</span></a>
+    </div>
+    <div class="plan">
+      <div class="pname">Cadena</div>
+      <div class="price">A medida</div>
+      <div class="per">Desde 3 locales</div>
+      <div class="desc">Multi-local, consolidación de datos, usuarios por sede y reporting global.</div>
+      <ul>
+        <li>Todo el plan Local</li>
+        <li>Multi-establecimiento</li>
+        <li>Roles y permisos</li>
+        <li>API + exportación</li>
+        <li>Customer Success dedicado</li>
+      </ul>
+      <a href="#" class="btn btn-ghost" style="width:100%;justify-content:center">Hablar con ventas</a>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="faq-grid">
+    <div class="faq-head">
+      <span class="eyebrow"><span class="dot">●</span> DUDAS HONESTAS</span>
+      <h2>Lo que <em>todo el mundo</em> pregunta.</h2>
+      <p>Si no ves tu duda aquí, escríbenos por — adivina — WhatsApp. Respondemos en menos de una hora.</p>
+    </div>
+    <div>
+      <details class="qa" open>
+        <summary>¿Mis clientes tienen que instalar algo? <span class="plus">+</span></summary>
+        <div class="a">Absolutamente nada. El único requisito es que tengan WhatsApp (el 97% de los móviles en España). Al registrar su primera compra, reciben un mensaje automático y quedan dados de alta.</div>
+      </details>
+      <details class="qa">
+        <summary>¿Cómo se conecta con mi TPV? <span class="plus">+</span></summary>
+        <div class="a">Para empezar no hace falta: el operador introduce el importe en nuestro panel en 3 segundos. Si tienes TPV compatible (Revo, Hosteltáctil, Glop y más) lo integramos automáticamente en el plan Cadena.</div>
+      </details>
+      <details class="qa">
+        <summary>¿Esto es legal con RGPD? <span class="plus">+</span></summary>
+        <div class="a">Sí. El cliente da consentimiento explícito en su primer mensaje (double opt-in). Los datos se almacenan en la UE, son tuyos y puedes exportarlos o borrarlos cuando quieras.</div>
+      </details>
+      <details class="qa">
+        <summary>¿Me llevo mis datos si me voy? <span class="plus">+</span></summary>
+        <div class="a">Siempre. Tus datos son tuyos. Exportas un CSV con un clic. Sin drama. Sin retención de rehenes.</div>
+      </details>
+      <details class="qa">
+        <summary>¿Cuánto tarda en dar resultado? <span class="plus">+</span></summary>
+        <div class="a">La reactivación de dormidos suele generar visitas la primera semana. La subida de ticket medio se ve en 4-6 semanas, cuando los clientes empiezan a comparar sus puntos.</div>
+      </details>
+      <details class="qa">
+        <summary>¿Y si WhatsApp cambia sus reglas? <span class="plus">+</span></summary>
+        <div class="a">Usamos la WhatsApp Business API oficial de Meta, no hacks. Cumplimos las plantillas aprobadas y los horarios. Si algo cambia, lo absorbemos nosotros sin que lo notes.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <h2>Deja de <em>rezar</em> para que vuelvan. <em>Llámalos.</em></h2>
+  <div class="buttons">
+    <a href="#pricing" class="btn btn-primary">Empezar 14 días gratis <span class="arrow">→</span></a>
+    <a href="#" class="btn" style="background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.2)">Ver demo · 2 min</a>
+  </div>
+  <div class="micro">SIN TARJETA · SIN PERMANENCIA · CANCELA CUANDO QUIERAS</div>
+</section>
+
+<footer class="ft">
+  <div class="ft-inner">
+    <div class="ft-brand">
+      <a href="#" class="brand"><span class="brand-mark">W</span> Whats<em>Loyalty</em></a>
+      <p>El CRM por WhatsApp para restaurantes, bares y cafeterías. Desde Madrid, para España.</p>
+    </div>
+    <div><h5>Producto</h5><ul><li><a href="#how">Cómo funciona</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Precios</a></li><li><a href="#">Integraciones</a></li></ul></div>
+    <div><h5>Casos</h5><ul><li><a href="#">Restaurantes</a></li><li><a href="#">Cafeterías</a></li><li><a href="#">Bares</a></li><li><a href="#">Cadenas</a></li></ul></div>
+    <div><h5>Empresa</h5><ul><li><a href="#">Sobre nosotros</a></li><li><a href="#">Blog</a></li><li><a href="#">Contacto</a></li></ul></div>
+  </div>
+  <div class="ft-bottom"><div>© 2026 WhatsLoyalty S.L. — Madrid, España</div><div>LEGAL · PRIVACIDAD · COOKIES</div></div>
+</footer>
+
+</body>
+</html>

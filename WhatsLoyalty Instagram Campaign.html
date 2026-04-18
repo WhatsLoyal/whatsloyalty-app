@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1600, initial-scale=1"/>
+<title>WhatsLoyalty · Campaña Instagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<style>
+  :root {
+    --paper:#F6F5F0; --paper2:#ECEAE1; --ink:#0A0F0C; --ink3:#3d4540; --ink4:#6b7570;
+    --line:#dcd9cc; --green:#00C851; --greenDeep:#00a843;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); font-family: "Inter Tight", -apple-system, system-ui, sans-serif; color: var(--ink); }
+  .page { padding: 40px 32px 80px; max-width: 1600px; margin: 0 auto; }
+
+  /* Header */
+  .hdr { display:flex; align-items:flex-end; justify-content:space-between; margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--line); gap: 40px; }
+  .hdr h1 { margin: 0; font-family: "Instrument Serif"; font-size: 52px; font-weight: 400; letter-spacing: -.02em; line-height: 1; }
+  .hdr h1 em { font-style: italic; color: var(--greenDeep); }
+  .hdr p { margin: 10px 0 0; color: var(--ink4); font-size: 15px; max-width: 620px; line-height: 1.5; }
+  .hdr .label-tag { font-family: "JetBrains Mono"; font-size: 10px; letter-spacing: .14em; color: var(--ink4); text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+
+  .section-label { font-family: "JetBrains Mono"; font-size: 11px; letter-spacing: .16em; color: var(--ink4); text-transform: uppercase; margin: 40px 0 22px; padding-bottom: 8px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+  .section-label span:last-child { color: var(--greenDeep); font-weight: 600; }
+
+  /* Grid */
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  @media (max-width: 1400px) { .grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 1050px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  /* Instagram post card */
+  .post { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; font-family: "Inter Tight"; display: flex; flex-direction: column; }
+  .ig-header { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #efefef; }
+  .ig-avatar { width: 32px; height: 32px; border-radius: 50%; padding: 2px; background: conic-gradient(from 0deg, #FD1D1D, #833AB4, #FCB045, #FD1D1D); display: grid; place-items: center; flex-shrink: 0; }
+  .ig-avatar > div { width: 100%; height: 100%; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 14px; }
+  .ig-meta { flex: 1; min-width: 0; }
+  .ig-username { font-size: 13px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .ig-verified { color: #3897F0; font-size: 11px; }
+  .ig-location { font-size: 11px; color: #737373; }
+  .ig-more { color: #262626; cursor: pointer; font-size: 16px; letter-spacing: 2px; }
+
+  /* HERO — product photography */
+  .ig-image { aspect-ratio: 4/5; position: relative; overflow: hidden; background: #eee; }
+  .ig-image .carousel-badge { position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,.55); color: #fff; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-family: "JetBrains Mono"; letter-spacing: 0.5px; display: flex; align-items: center; gap: 4px; backdrop-filter: blur(4px); z-index: 10; }
+
+  .stage { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+  .overlay-tag { position: absolute; top: 18px; left: 18px; font-family: "JetBrains Mono"; font-size: 9px; letter-spacing: .18em; text-transform: uppercase; opacity: .75; z-index: 8; }
+  .overlay-title { position: absolute; bottom: 20px; left: 20px; right: 20px; font-family: "Instrument Serif"; font-size: 22px; line-height: 1.05; letter-spacing: -.01em; z-index: 8; }
+  .overlay-title em { font-style: italic; }
+  .overlay-sig { position: absolute; top: 18px; right: 54px; font-family: "Instrument Serif"; font-style: italic; font-size: 14px; opacity: .65; z-index: 8; }
+
+  /* IG footer */
+  .ig-actions { display: flex; align-items: center; padding: 8px 10px 4px; gap: 14px; }
+  .ig-actions .spacer { flex: 1; }
+  .ig-stats { padding: 2px 12px 6px; font-size: 13px; font-weight: 600; }
+  .ig-caption { padding: 0 12px 8px; font-size: 13px; line-height: 1.4; color: #262626; }
+  .ig-caption .username { font-weight: 600; margin-right: 5px; }
+  .ig-caption .hashtag { color: #00376B; }
+  .ig-comments { padding: 0 12px 6px; font-size: 12px; color: #737373; }
+  .ig-comments .c { margin-bottom: 2px; color: #262626; }
+  .ig-comments .c b { font-weight: 600; }
+  .ig-time { padding: 2px 12px 10px; font-size: 10px; color: #A8A8A8; text-transform: uppercase; font-family: "JetBrains Mono"; letter-spacing: .5px; }
+
+  /* Result strip */
+  .result-strip { background: var(--ink); color: var(--paper); border-radius: 14px; padding: 14px 16px; margin: 10px 12px 14px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+  .result-strip::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 100% 0%, rgba(0,200,81,.2), transparent 60%); }
+  .result-strip .rs-num { font-family: "Instrument Serif"; font-size: 38px; line-height: 1; letter-spacing: -.02em; color: var(--green); position: relative; }
+  .result-strip .rs-num em { font-style: italic; }
+  .result-strip .rs-txt { font-size: 12px; line-height: 1.35; color: rgba(255,255,255,.85); position: relative; }
+  .result-strip .rs-mono { font-family: "JetBrains Mono"; font-size: 9px; letter-spacing: .14em; color: var(--green); opacity: .85; margin-bottom: 3px; display: block; text-transform: uppercase; }
+
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+  <div class="hdr">
+    <div>
+      <div class="label-tag">● Campaña orgánica · Instagram · lanzamiento Q2</div>
+      <h1>Shot on WhatsLoyalty.<br/><em>El comercio de barrio, en primer plano.</em></h1>
+      <p>Ocho posts con el mismo lenguaje visual que Apple usa para presentar un producto: móvil protagonista, bodegón limpio, un objeto del oficio, y un titular editorial. Sin personas dibujadas, sin stock photo. La app se ve, se lee y se reconoce.</p>
+    </div>
+  </div>
+
+  <div class="section-label"><span>Feed · 8 posts</span><span>● en producción</span></div>
+  <div class="grid" id="feed-root"></div>
+
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ig-product.jsx"></script>
+
+<script type="text/babel">
+
+// ═══════════════════════════════════════════════════════════════
+// Escenas "product photography" por sector
+// Cada escena = fondo monocromático + objeto bodegón + iPhone con screen
+// ═══════════════════════════════════════════════════════════════
+
+// 1 · CAFÉ — taza blanca sobre madera, móvil en diagonal
+function Scene_Cafe() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(160deg, #F4E8D2 0%, #E5C89E 55%, #B88C5A 100%)',overflow:'hidden'}}>
+      {/* Wood grain faint */}
+      <div style={{position:'absolute',inset:0,opacity:.12,backgroundImage:'repeating-linear-gradient(178deg, transparent 0 20px, rgba(120,80,40,.4) 20px 21px, transparent 21px 44px, rgba(80,50,20,.3) 44px 45px)'}}/>
+      {/* Light spot */}
+      <div style={{position:'absolute',top:'10%',left:'20%',width:'70%',height:'70%',background:'radial-gradient(circle, rgba(255,240,210,.5), transparent 60%)'}}/>
+      {/* Coffee cup — behind, offset */}
+      <div style={{position:'absolute',bottom:'14%',right:'10%',width:'46%'}}>
+        <svg viewBox="0 0 200 180" style={{width:'100%',filter:'drop-shadow(0 30px 40px rgba(90,50,10,.35))'}}>
+          <ellipse cx="100" cy="170" rx="88" ry="8" fill="#000" opacity=".15"/>
+          <ellipse cx="100" cy="55" rx="72" ry="14" fill="#fff"/>
+          <ellipse cx="100" cy="55" rx="62" ry="10" fill="#3d2817"/>
+          {/* latte art */}
+          <path d="M80 52 Q80 48 86 48 Q92 48 92 52 Q92 48 98 48 Q104 48 104 52 Q104 58 92 62 Q80 58 80 52" fill="#D4A056" opacity=".8"/>
+          <path d="M28 55 Q28 120 40 150 Q60 165 100 165 Q140 165 160 150 Q172 120 172 55 Z" fill="#fff"/>
+          {/* handle */}
+          <ellipse cx="178" cy="100" rx="18" ry="22" fill="none" stroke="#fff" strokeWidth="12"/>
+          {/* steam */}
+          <g fill="none" stroke="#fff" strokeWidth="2.5" opacity=".5" strokeLinecap="round">
+            <path d="M80 30 Q75 20 82 12 Q88 4 82 -5"/>
+            <path d="M100 30 Q105 20 98 12 Q92 4 98 -5"/>
+            <path d="M120 30 Q115 20 122 12 Q128 4 122 -5"/>
+          </g>
+        </svg>
+      </div>
+      {/* Coffee beans — scattered */}
+      <div style={{position:'absolute',bottom:'8%',left:'8%'}}>
+        {[{x:0,y:0,r:0},{x:18,y:-6,r:30},{x:-12,y:12,r:-20},{x:30,y:8,r:60}].map((b,i)=>(
+          <svg key={i} width="22" height="14" viewBox="0 0 22 14" style={{position:'absolute',left:b.x,top:b.y,transform:`rotate(${b.r}deg)`,filter:'drop-shadow(0 4px 4px rgba(0,0,0,.2))'}}>
+            <ellipse cx="11" cy="7" rx="10" ry="5.5" fill="#3d2817"/>
+            <path d="M11 2 Q11 7 11 12" stroke="#1a1410" strokeWidth="1.2" fill="none"/>
+          </svg>
+        ))}
+      </div>
+      {/* Phone hero */}
+      <div style={{position:'absolute',top:'24%',left:'8%'}}>
+        <PhoneHero rotate={-8} width={170}><MiniConfirm name="Marta" pts={15} balance="100 / 100" subject="café"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#3d2817'}}>WHATSLOYALTY · CAFÉ MORENO</div>
+      <div className="overlay-sig" style={{color:'#3d2817'}}>nº 10</div>
+      <div className="overlay-title" style={{color:'#3d2817'}}>Tu café nº 10,<br/><em>por la casa.</em></div>
+    </div>
+  );
+}
+
+// 2 · DENTAL — espejo dental sobre toalla azul, móvil con agenda
+function Scene_Dental() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(165deg, #E8F0F2 0%, #C5DDE3 60%, #89B4BE 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'5%',left:'10%',width:'80%',height:'70%',background:'radial-gradient(ellipse, rgba(255,255,255,.7), transparent 65%)'}}/>
+      {/* Folded towel bottom */}
+      <div style={{position:'absolute',bottom:0,left:0,right:0,height:'35%',background:'linear-gradient(180deg, #B8D0D6 0%, #7AA0AA 100%)',clipPath:'polygon(0 15%, 100% 0, 100% 100%, 0 100%)'}}>
+        <div style={{position:'absolute',top:'20%',left:0,right:0,height:2,background:'rgba(255,255,255,.4)'}}/>
+        <div style={{position:'absolute',top:'55%',left:0,right:0,height:2,background:'rgba(255,255,255,.4)'}}/>
+      </div>
+      {/* Dental mirror (bodegón) */}
+      <div style={{position:'absolute',bottom:'12%',right:'8%',width:'44%',transform:'rotate(28deg)',transformOrigin:'center'}}>
+        <svg viewBox="0 0 280 80" style={{width:'100%',filter:'drop-shadow(0 20px 24px rgba(40,80,100,.35))'}}>
+          {/* handle */}
+          <rect x="40" y="34" width="180" height="12" rx="6" fill="url(#dm-grad)"/>
+          <defs>
+            <linearGradient id="dm-grad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="#e8e6df"/><stop offset=".3" stopColor="#b8b6af"/><stop offset=".7" stopColor="#78766f"/><stop offset="1" stopColor="#b8b6af"/>
+            </linearGradient>
+            <radialGradient id="dm-mirror" cx=".35" cy=".35" r=".7">
+              <stop offset="0" stopColor="#fff"/><stop offset=".5" stopColor="#D0E0E8"/><stop offset="1" stopColor="#6B8A95"/>
+            </radialGradient>
+          </defs>
+          {/* mirror head */}
+          <circle cx="28" cy="40" r="26" fill="url(#dm-mirror)" stroke="#b8b6af" strokeWidth="2"/>
+          <circle cx="22" cy="34" r="8" fill="#fff" opacity=".6"/>
+          {/* handle tip */}
+          <rect x="220" y="36" width="28" height="8" rx="4" fill="#78766f"/>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'22%',right:'10%'}}>
+        <PhoneHero rotate={6} width={170}><MiniConfirm name="Sr. Domínguez" pts={20} balance="Revisión agendada" subject="visita" accent="#4A7A8C"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#1a4a58'}}>WHATSLOYALTY · CLÍNICA SONRISA</div>
+      <div className="overlay-sig" style={{color:'#1a4a58'}}>rev. 03/26</div>
+      <div className="overlay-title" style={{color:'#1a4a58'}}>Recordatorios<br/><em>que no irritan.</em></div>
+    </div>
+  );
+}
+
+// 3 · PODÓLOGO — algodón y aceite en fondo terracota
+function Scene_Podologo() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(170deg, #F0DDC4 0%, #D4A77A 55%, #A56D3F 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'15%',left:'20%',width:'60%',height:'60%',background:'radial-gradient(ellipse, rgba(255,240,220,.5), transparent 65%)'}}/>
+      {/* Glass oil bottle */}
+      <div style={{position:'absolute',bottom:'10%',right:'12%',width:'22%'}}>
+        <svg viewBox="0 0 100 160" style={{width:'100%',filter:'drop-shadow(0 20px 28px rgba(80,40,10,.4))'}}>
+          <ellipse cx="50" cy="152" rx="30" ry="4" fill="#000" opacity=".2"/>
+          <path d="M40 20 L60 20 L60 40 Q70 45 72 60 L72 140 Q72 152 50 152 Q28 152 28 140 L28 60 Q30 45 40 40 Z" fill="#A8C4A0" opacity=".65"/>
+          <path d="M40 20 L60 20 L60 40 Q70 45 72 60 L72 140 Q72 152 50 152 Q28 152 28 140 L28 60 Q30 45 40 40 Z" fill="url(#po-grad)" opacity=".5"/>
+          <defs>
+            <linearGradient id="po-grad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#fff" stopOpacity=".5"/><stop offset=".5" stopColor="#fff" stopOpacity="0"/><stop offset="1" stopColor="#3d5a35" stopOpacity=".4"/>
+            </linearGradient>
+          </defs>
+          {/* cork */}
+          <rect x="38" y="10" width="24" height="14" rx="2" fill="#8A5A3F"/>
+          {/* label */}
+          <rect x="28" y="78" width="44" height="40" fill="#fff"/>
+          <text x="50" y="92" textAnchor="middle" fontSize="6" fontFamily="Instrument Serif" fontStyle="italic" fill="#3d2817">crema</text>
+          <text x="50" y="102" textAnchor="middle" fontSize="4" fontFamily="JetBrains Mono" letterSpacing="1" fill="#8A5A3F">PIES DELICADOS</text>
+          <line x1="36" y1="110" x2="64" y2="110" stroke="#3d2817" strokeWidth=".4"/>
+        </svg>
+      </div>
+      {/* Cotton balls */}
+      <div style={{position:'absolute',bottom:'8%',left:'10%',display:'flex',gap:8}}>
+        {[0,1,2].map(i=>(
+          <div key={i} style={{width:32-i*3,height:32-i*3,borderRadius:'50%',background:'radial-gradient(circle at 35% 35%, #fff, #E8E4D3)',boxShadow:'0 6px 10px rgba(0,0,0,.12)'}}/>
+        ))}
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'18%',left:'10%'}}>
+        <PhoneHero rotate={-6} width={170}><MiniClient name="Dolores Vázquez" accent="#A56D3F" visits={6}/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#5a3418'}}>WHATSLOYALTY · PODOLOGÍA RAMOS</div>
+      <div className="overlay-sig" style={{color:'#5a3418'}}>paso a paso</div>
+      <div className="overlay-title" style={{color:'#5a3418'}}>Fidelizar sin apps.<br/><em>Con WhatsApp basta.</em></div>
+    </div>
+  );
+}
+
+// 4 · TIENDA ROPA — percha con etiqueta, móvil con descuento VIP
+function Scene_Tienda() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(175deg, #F4E4E6 0%, #E0B8BC 55%, #9E6D72 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'10%',left:'15%',width:'70%',height:'70%',background:'radial-gradient(ellipse, rgba(255,240,240,.55), transparent 65%)'}}/>
+      {/* Hanger with tag */}
+      <div style={{position:'absolute',top:'30%',right:'14%',width:'38%',transform:'rotate(12deg)'}}>
+        <svg viewBox="0 0 200 240" style={{width:'100%',filter:'drop-shadow(0 20px 28px rgba(80,30,40,.35))'}}>
+          {/* hook */}
+          <path d="M100 40 Q100 20 115 18 Q130 18 130 30" stroke="#1a1410" strokeWidth="4" fill="none" strokeLinecap="round"/>
+          {/* hanger */}
+          <path d="M30 60 Q100 40 170 60" stroke="#1a1410" strokeWidth="4" fill="none" strokeLinecap="round"/>
+          <rect x="96" y="38" width="8" height="6" fill="#1a1410"/>
+          {/* thread */}
+          <line x1="130" y1="30" x2="150" y2="90" stroke="#8A5A3F" strokeWidth="1"/>
+          {/* price tag */}
+          <g transform="translate(150 90)">
+            <path d="M0 0 L50 0 L60 15 L50 30 L0 30 Z" fill="#fff" stroke="#1a1410" strokeWidth="1.5"/>
+            <circle cx="46" cy="15" r="3" fill="none" stroke="#1a1410" strokeWidth="1.2"/>
+            <text x="26" y="14" textAnchor="middle" fontSize="8" fontFamily="Instrument Serif" fontStyle="italic" fill="#3d2817">marea</text>
+            <text x="26" y="24" textAnchor="middle" fontSize="6" fontFamily="JetBrains Mono" fill="#00a843" fontWeight="700">-15% VIP</text>
+          </g>
+          {/* garment */}
+          <path d="M50 64 L150 64 L145 220 Q100 232 55 220 Z" fill="#1a1410"/>
+          <path d="M65 64 Q100 80 135 64" stroke="#2a2017" strokeWidth="1" fill="none"/>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'22%',left:'10%'}}>
+        <PhoneHero rotate={-5} width={170}><MiniConfirm name="Vanessa" pts={0} balance="-15% aplicado" subject="compra" accent="#9E4A58"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#4a1e28'}}>WHATSLOYALTY · MAREA STUDIO</div>
+      <div className="overlay-sig" style={{color:'#4a1e28'}}>ss/26</div>
+      <div className="overlay-title" style={{color:'#4a1e28'}}>Tu VIP entra<br/><em>sabiendo que lo es.</em></div>
+    </div>
+  );
+}
+
+// 5 · PELU CANINA — cepillo y lazo, móvil con booking
+function Scene_PeluCanina() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(170deg, #E8F0E5 0%, #AFD4B8 55%, #5F9478 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'10%',left:'15%',width:'70%',height:'70%',background:'radial-gradient(ellipse, rgba(255,255,240,.5), transparent 65%)'}}/>
+      {/* Brush */}
+      <div style={{position:'absolute',bottom:'12%',right:'10%',width:'44%',transform:'rotate(-20deg)'}}>
+        <svg viewBox="0 0 260 80" style={{width:'100%',filter:'drop-shadow(0 18px 24px rgba(20,60,40,.35))'}}>
+          {/* brush pad */}
+          <rect x="20" y="20" width="110" height="40" rx="10" fill="#D4A056"/>
+          <rect x="20" y="20" width="110" height="10" rx="5" fill="#B8842E"/>
+          {/* bristles */}
+          {Array.from({length:22}).map((_,i)=>(
+            <line key={i} x1={26+i*5} y1="60" x2={26+i*5} y2="74" stroke="#1a1410" strokeWidth="1.5"/>
+          ))}
+          {/* handle */}
+          <path d="M130 30 Q180 25 240 40 Q244 50 240 50 Q180 42 130 50 Z" fill="#8A5A3F"/>
+          <path d="M140 36 Q180 34 230 44" stroke="#6B4328" strokeWidth=".8" fill="none"/>
+        </svg>
+      </div>
+      {/* Red bow */}
+      <div style={{position:'absolute',bottom:'16%',left:'18%',width:'14%',transform:'rotate(-12deg)'}}>
+        <svg viewBox="0 0 80 60" style={{width:'100%',filter:'drop-shadow(0 8px 10px rgba(0,0,0,.2))'}}>
+          <path d="M40 30 L14 12 L14 48 Z" fill="#D94E3F"/>
+          <path d="M40 30 L66 12 L66 48 Z" fill="#D94E3F"/>
+          <ellipse cx="40" cy="30" rx="7" ry="9" fill="#A83A2E"/>
+          <path d="M40 30 L36 50 M40 30 L44 50" stroke="#D94E3F" strokeWidth="4" strokeLinecap="round"/>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'18%',right:'9%'}}>
+        <PhoneHero rotate={8} width={170}><MiniClient name="Lomo · corte nº8" accent="#5F9478" visits={8}/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#1f4833'}}>WHATSLOYALTY · LOMO & LANA</div>
+      <div className="overlay-sig" style={{color:'#1f4833'}}>ed. spring</div>
+      <div className="overlay-title" style={{color:'#1f4833'}}>Los perros tienen peluquería.<br/><em>Sus dueños, WhatsApp.</em></div>
+    </div>
+  );
+}
+
+// 6 · PANADERÍA — hogaza y tela de lino
+function Scene_Panaderia() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(170deg, #F4E4C6 0%, #E0B878 55%, #A56E2F 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'12%',left:'15%',width:'70%',height:'70%',background:'radial-gradient(ellipse, rgba(255,240,210,.55), transparent 65%)'}}/>
+      {/* Linen cloth */}
+      <div style={{position:'absolute',bottom:0,left:'-10%',right:'-10%',height:'45%',background:'linear-gradient(180deg, rgba(236,226,200,.9), rgba(196,176,140,.9))',transform:'rotate(-2deg)',borderTopLeftRadius:'30% 20%',borderTopRightRadius:'30% 20%'}}>
+        <div style={{position:'absolute',top:'15%',left:0,right:0,height:1,background:'rgba(140,100,60,.3)'}}/>
+        <div style={{position:'absolute',top:'40%',left:0,right:0,height:1,background:'rgba(140,100,60,.3)'}}/>
+      </div>
+      {/* Bread loaf */}
+      <div style={{position:'absolute',bottom:'14%',right:'8%',width:'52%'}}>
+        <svg viewBox="0 0 260 140" style={{width:'100%',filter:'drop-shadow(0 24px 28px rgba(120,60,20,.4))'}}>
+          <ellipse cx="130" cy="128" rx="110" ry="6" fill="#000" opacity=".18"/>
+          <ellipse cx="130" cy="80" rx="110" ry="48" fill="#D4A056"/>
+          <ellipse cx="130" cy="70" rx="100" ry="42" fill="#E0B878"/>
+          {/* score marks */}
+          <path d="M60 50 Q130 30 200 50" stroke="#8A5A3F" strokeWidth="3" fill="none" opacity=".6"/>
+          <path d="M70 60 Q130 40 190 60" stroke="#8A5A3F" strokeWidth="2" fill="none" opacity=".5"/>
+          <path d="M80 70 Q130 52 180 70" stroke="#8A5A3F" strokeWidth="1.5" fill="none" opacity=".4"/>
+          {/* flour dust */}
+          <g fill="#F5E6C0" opacity=".7">
+            <circle cx="80" cy="70" r="1.5"/>
+            <circle cx="150" cy="60" r="2"/>
+            <circle cx="200" cy="80" r="1.5"/>
+            <circle cx="110" cy="85" r="1.2"/>
+          </g>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'20%',left:'10%'}}>
+        <PhoneHero rotate={-8} width={170}><MiniConfirm name="Paquita" pts={1} balance="4 / 5 barras" subject="hogaza" accent="#A56E2F"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#4a2d0f'}}>WHATSLOYALTY · TRIGALES · DESDE 1987</div>
+      <div className="overlay-sig" style={{color:'#4a2d0f'}}>4/5</div>
+      <div className="overlay-title" style={{color:'#4a2d0f'}}>La 5ª barra<br/><em>siempre gratis.</em></div>
+    </div>
+  );
+}
+
+// 7 · FISIO — banda elástica y vela minimal
+function Scene_Fisio() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(170deg, #EDE8DB 0%, #C7B89A 55%, #8A7A5E 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'10%',left:'10%',width:'80%',height:'70%',background:'radial-gradient(ellipse, rgba(255,250,240,.5), transparent 65%)'}}/>
+      {/* Candle */}
+      <div style={{position:'absolute',bottom:'14%',right:'14%',width:'14%'}}>
+        <svg viewBox="0 0 60 130" style={{width:'100%',filter:'drop-shadow(0 14px 20px rgba(80,60,30,.35))'}}>
+          <ellipse cx="30" cy="122" rx="24" ry="3" fill="#000" opacity=".18"/>
+          <rect x="6" y="24" width="48" height="100" rx="3" fill="#E8DCC4"/>
+          <rect x="6" y="24" width="48" height="100" rx="3" fill="url(#cg)"/>
+          <defs>
+            <linearGradient id="cg" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stopColor="#fff" stopOpacity=".3"/>
+              <stop offset=".5" stopColor="#fff" stopOpacity="0"/>
+              <stop offset="1" stopColor="#000" stopOpacity=".2"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="30" cy="24" rx="24" ry="4" fill="#C4AE86"/>
+          <rect x="28" y="12" width="4" height="14" fill="#3d2817"/>
+          <ellipse cx="30" cy="10" rx="3" ry="6" fill="#E0A330"/>
+          <ellipse cx="30" cy="8" rx="1.5" ry="3" fill="#fff"/>
+        </svg>
+      </div>
+      {/* Elastic band rolled */}
+      <div style={{position:'absolute',bottom:'14%',left:'12%',width:'22%'}}>
+        <svg viewBox="0 0 120 50" style={{width:'100%',filter:'drop-shadow(0 12px 14px rgba(0,0,0,.18))'}}>
+          <path d="M20 30 Q40 20 60 25 Q80 30 100 22 Q105 25 102 30 Q80 36 60 30 Q40 36 22 34 Q17 33 20 30" fill="#4A7A8C" opacity=".85"/>
+          <path d="M25 28 Q45 22 65 26 Q85 30 100 24" stroke="#fff" strokeWidth=".6" fill="none" opacity=".5"/>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'15%',right:'8%'}}>
+        <PhoneHero rotate={5} width={170}><MiniConfirm name="Javier" pts={0} balance="Sesión confirmada" subject="sesión" accent="#6A7A4A"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#3d3420'}}>WHATSLOYALTY · PAUSA FISIOTERAPIA</div>
+      <div className="overlay-sig" style={{color:'#3d3420'}}>jue 10:30</div>
+      <div className="overlay-title" style={{color:'#3d3420'}}>Cero citas<br/><em>en blanco.</em></div>
+    </div>
+  );
+}
+
+// 8 · GYM — mancuerna y toalla oscura
+function Scene_Gym() {
+  return (
+    <div style={{position:'absolute',inset:0,background:'linear-gradient(165deg, #2a3530 0%, #151f1a 60%, #0a0f0c 100%)',overflow:'hidden'}}>
+      <div style={{position:'absolute',top:'15%',left:'15%',width:'70%',height:'70%',background:'radial-gradient(ellipse, rgba(0,200,81,.12), transparent 65%)'}}/>
+      {/* Dumbbell */}
+      <div style={{position:'absolute',bottom:'12%',right:'6%',width:'48%',transform:'rotate(-8deg)'}}>
+        <svg viewBox="0 0 280 80" style={{width:'100%',filter:'drop-shadow(0 24px 28px rgba(0,0,0,.6))'}}>
+          <circle cx="40" cy="40" r="36" fill="#1a1f1c"/>
+          <circle cx="40" cy="40" r="30" fill="#2a3530"/>
+          <circle cx="40" cy="40" r="12" fill="#0a0f0c"/>
+          <text x="40" y="44" textAnchor="middle" fontSize="8" fontFamily="JetBrains Mono" fontWeight="700" fill="#00C851">10</text>
+          {/* bar */}
+          <rect x="70" y="34" width="140" height="12" rx="2" fill="#3a4540"/>
+          <rect x="70" y="34" width="140" height="3" fill="#5a6560"/>
+          {/* knurl */}
+          {Array.from({length:14}).map((_,i)=>(
+            <line key={i} x1={80+i*9} y1="34" x2={80+i*9} y2="46" stroke="#1a1f1c" strokeWidth=".8"/>
+          ))}
+          <circle cx="240" cy="40" r="36" fill="#1a1f1c"/>
+          <circle cx="240" cy="40" r="30" fill="#2a3530"/>
+          <circle cx="240" cy="40" r="12" fill="#0a0f0c"/>
+          <text x="240" y="44" textAnchor="middle" fontSize="8" fontFamily="JetBrains Mono" fontWeight="700" fill="#00C851">10</text>
+        </svg>
+      </div>
+      {/* Towel folded */}
+      <div style={{position:'absolute',bottom:'14%',left:'8%',width:'22%'}}>
+        <svg viewBox="0 0 120 60" style={{width:'100%',filter:'drop-shadow(0 10px 14px rgba(0,0,0,.4))'}}>
+          <rect x="4" y="4" width="112" height="52" rx="3" fill="#1a2420"/>
+          <rect x="4" y="4" width="112" height="4" fill="#2a3530"/>
+          <rect x="4" y="14" width="112" height="1" fill="#2a3530" opacity=".6"/>
+          <rect x="4" y="24" width="112" height="1" fill="#2a3530" opacity=".6"/>
+          <rect x="4" y="42" width="112" height="1" fill="#00C851" opacity=".5"/>
+          <text x="60" y="50" textAnchor="middle" fontSize="5" fontFamily="Instrument Serif" fontStyle="italic" fill="#00C851">forja</text>
+        </svg>
+      </div>
+      {/* Phone */}
+      <div style={{position:'absolute',top:'18%',left:'10%'}}>
+        <PhoneHero rotate={-6} width={170}><MiniHistory accent="#00C851"/></PhoneHero>
+      </div>
+      <div className="overlay-tag" style={{color:'#00C851',opacity:1}}>WHATSLOYALTY · FORJA STUDIO</div>
+      <div className="overlay-sig" style={{color:'rgba(255,255,255,.6)'}}>día 12</div>
+      <div className="overlay-title" style={{color:'#fff'}}>La racha,<br/><em style={{color:'#00C851'}}>por WhatsApp.</em></div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════
+// POST DATA
+// ═══════════════════════════════════════════════════════════════
+const POSTS = [
+  {
+    Scene: Scene_Cafe, user: 'cafemoreno.madrid', verified: true, avatar: '☕', location: 'Chamberí, Madrid', slides: 4,
+    caption: {
+      hook: 'Antes perdía sellos en servilletas. Ahora los guarda WhatsApp.',
+      body: 'Desde que nos cambiamos a @whatsloyalty, Marta sabe que su cortado nº10 va por la casa sin mirar un papelito. Y yo puedo escribirle por WhatsApp para decirle que tenemos brunch el sábado — sin apps, sin registros. 🙌',
+      hashtags: ['#caféEspecialidad', '#Chamberí', '#MadridCafé', '#WhatsLoyalty'],
+    },
+    likes: '1.847',
+    comments: [{user:'panaderia.trigales',text:'Llevamos 3 semanas y los clientes alucinan 🔥'},{user:'lucia.b',text:'¡Os adoro! Mi cortado de la mañana 💚'}],
+    time: 'Hace 2 horas',
+    result: { num:'140', unit:'', label:'CLIENTES RECUPERADOS · 2 MESES', txt:'Después de 18 meses de tarjetas de cartón olvidadas.' },
+  },
+  {
+    Scene: Scene_Dental, user: 'dentalsonrisa_sevilla', verified: false, avatar: '🦷', location: 'Sevilla Este', slides: 3,
+    caption: {
+      hook: 'El SMS no lo leen. El WhatsApp sí.',
+      body: 'En odontología el no-show cuesta dinero y hueco de agenda. Desde que usamos @whatsloyalty los recordatorios van por WhatsApp con el nombre del paciente y la silla que le toca. 4 semanas sin una cita perdida 🎯',
+      hashtags: ['#OdontologíaSevilla', '#ExperienciaPaciente', '#WhatsLoyalty'],
+    },
+    likes: '892',
+    comments: [{user:'podologia.ramos',text:'Idéntico problema el nuestro 👆'},{user:'paciente_javi',text:'Mi primer recordatorio majo de una clínica 😂'}],
+    time: 'Hace 6 horas',
+    result: { num:'0', unit:'', label:'NO-SHOWS · ÚLTIMAS 4 SEMANAS', txt:'Antes: media de 7 huecos vacíos al mes.' },
+  },
+  {
+    Scene: Scene_Podologo, user: 'podologiaramos', verified: false, avatar: '🦶', location: 'Ruzafa, Valencia', slides: 2,
+    caption: {
+      hook: 'Mis pacientes mayores no tienen una app de fidelización. Tienen WhatsApp.',
+      body: 'Y eso lo cambia todo. Los abuelos agendan solos escribiendo "revisión" al número de la clínica, reciben recordatorio un día antes, y se fidelizan sin bajar nada. @whatsloyalty entendió que simplicidad es la mejor tecnología 👣',
+      hashtags: ['#Podología', '#Valencia', '#Accesibilidad', '#WhatsLoyalty'],
+    },
+    likes: '524',
+    comments: [{user:'maria.jimenez.67',text:'Mi madre (82) os reserva sola 😍'},{user:'fisioterapia.pausa',text:'Tomo nota — justo lo que necesitamos'}],
+    time: 'Hace 1 día',
+    result: { num:'+38', unit:'%', label:'VISITAS RECURRENTES', txt:'Vs. mismo trimestre del año pasado.' },
+  },
+  {
+    Scene: Scene_Tienda, user: 'marea.studio', verified: true, avatar: 'M', location: 'Malasaña, Madrid', slides: 5,
+    caption: {
+      hook: 'Mi clienta VIP entra sabiendo que es VIP. Sin tarjeta, sin app, sin plástico.',
+      body: 'En @whatsloyalty le reconozco por WhatsApp, le aplico -15% por ser de las primeras 100, y le aviso de rebajas privadas antes que a nadie. Vendimos más en marzo que en todo el invierno 🔥',
+      hashtags: ['#ModaIndependiente', '#Malasaña', '#WhatsLoyalty'],
+    },
+    likes: '2.341',
+    comments: [{user:'vanessa.madrid',text:'Quiero ser VIP 🙋‍♀️'},{user:'cafemoreno.madrid',text:'Sois la referencia 💚'}],
+    time: 'Hace 1 día',
+    result: { num:'×2', unit:'', label:'VENTAS VS. MISMO MES ANT.', txt:'Con el mismo equipo y sin abrir tienda nueva.' },
+  },
+  {
+    Scene: Scene_PeluCanina, user: 'lomoylana.bilbao', verified: false, avatar: '🐕', location: 'Deusto, Bilbao', slides: 3,
+    caption: {
+      hook: 'Los perros tienen peluquería. Sus dueños tienen WhatsApp.',
+      body: 'Antes pasaba el día cogiendo llamadas. Ahora los dueños escriben "Lomo corte nº8" al WhatsApp de la peluquería y @whatsloyalty sugiere hueco, cobra anticipo y recuerda el día antes. Mi voz se recupera 🎧',
+      hashtags: ['#PeluqueríaCanina', '#Bilbao', '#WhatsLoyalty'],
+    },
+    likes: '1.112',
+    comments: [{user:'lomoelterrier',text:'✂️ confirmo, quedé preciosa'},{user:'dentalsonrisa_sevilla',text:'Jajaja mi voz llorando 😂'}],
+    time: 'Hace 2 días',
+    result: { num:'6h', unit:'', label:'AL TELÉFONO · AHORA 40 MIN', txt:'Tiempo recuperado para lo que importa: los perros.' },
+  },
+  {
+    Scene: Scene_Panaderia, user: 'trigales_panaderia', verified: false, avatar: '🥖', location: 'Zaragoza centro', slides: 4,
+    caption: {
+      hook: 'La 5ª barra va por la casa. Siempre ha sido así. Ahora, además, lo saben.',
+      body: 'Mi padre abrió Trigales en 1987. La quinta barra siempre ha sido gratis pero nadie se acordaba. Con @whatsloyalty cada barra suma y al volver se la regalamos. Tradiciones intactas; el papel se jubila 📜',
+      hashtags: ['#PanArtesano', '#Zaragoza', '#NegocioFamiliar', '#WhatsLoyalty'],
+    },
+    likes: '1.683',
+    comments: [{user:'cafemoreno.madrid',text:'🥹 la historia más bonita de la semana'},{user:'abueladezgz',text:'Mi barra favorita sigue siendo la 5ª 🤍'}],
+    time: 'Hace 3 días',
+    result: { num:'94', unit:'%', label:'CLIENTES QUE COMPLETAN LA 5ª', txt:'El programa de siempre, ahora invisible y perfecto.' },
+  },
+  {
+    Scene: Scene_Fisio, user: 'pausa.fisioterapia', verified: false, avatar: '🧘', location: 'Gijón', slides: 2,
+    caption: {
+      hook: 'En fisio, una cita perdida son 45 minutos de manos vacías.',
+      body: '8 meses con @whatsloyalty: recordatorios por WhatsApp, confirmación con un clic, reprogramación fácil. Este marzo no hemos tenido ni un no-show. En un negocio de tiempo, eso son márgenes y dormir tranquilos 🌿',
+      hashtags: ['#Fisioterapia', '#Gijón', '#SaludPrivada', '#WhatsLoyalty'],
+    },
+    likes: '671',
+    comments: [{user:'podologiaramos',text:'Compañeros, qué gozada leer esto'},{user:'runner.asturianx',text:'✊ gracias por devolverme el tobillo'}],
+    time: 'Hace 4 días',
+    result: { num:'0', unit:'', label:'CITAS PERDIDAS · MARZO', txt:'Equivalente a 2.900€ que se habrían quedado en la camilla.' },
+  },
+  {
+    Scene: Scene_Gym, user: 'forja.studio', verified: true, avatar: 'F', location: 'Gràcia, Barcelona', slides: 6,
+    caption: {
+      hook: '12 clases seguidas. 420 kcal hoy. Un mensaje de Aisha: "te vemos el jueves".',
+      body: 'Fidelizar un gym no es sumar sellos: es construir hábito. Con @whatsloyalty mandamos rachas, retos y celebraciones por WhatsApp — donde la gente sí abre los mensajes. Churn en caída libre 💪',
+      hashtags: ['#gymBoutique', '#Barcelona', '#Hábito', '#WhatsLoyalty'],
+    },
+    likes: '3.204',
+    comments: [{user:'aisha.coach',text:'💚 somos equipo'},{user:'clau.runner',text:'Mi racha va por 22 semanas 👀'}],
+    time: 'Hace 5 días',
+    result: { num:'−41', unit:'%', label:'CHURN MENSUAL', txt:'De 17% a 10%. El abandono silencioso ya no lo es.' },
+  },
+];
+
+// ── IG icons ──
+const IgHeart = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>;
+const IgComment = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"/></svg>;
+const IgShare = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>;
+const IgBookmark = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#262626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>;
+const IgCarousel = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 4H6a2 2 0 00-2 2v10"/></svg>;
+
+function Post({ post }) {
+  const Scene = post.Scene;
+  return (
+    <div className="post">
+      <div className="ig-header">
+        <div className="ig-avatar"><div>{post.avatar}</div></div>
+        <div className="ig-meta">
+          <div className="ig-username">{post.user}{post.verified && <span className="ig-verified">✓</span>}</div>
+          <div className="ig-location">{post.location}</div>
+        </div>
+        <div className="ig-more">⋯</div>
+      </div>
+      <div className="ig-image">
+        <div className="carousel-badge"><IgCarousel/> 1/{post.slides}</div>
+        <Scene/>
+      </div>
+      <div className="ig-actions">
+        <IgHeart/><IgComment/><IgShare/>
+        <div className="spacer"/>
+        <IgBookmark/>
+      </div>
+      <div className="ig-stats">{post.likes} Me gusta</div>
+      <div className="ig-caption">
+        <span className="username">{post.user}</span>
+        <b>{post.caption.hook}</b> {post.caption.body}
+        <div style={{marginTop:6}}>{post.caption.hashtags.map((h,i)=><span key={i} className="hashtag">{h} </span>)}</div>
+      </div>
+      <div className="ig-comments">
+        <div style={{marginBottom:4}}>Ver los {post.comments.length + 18} comentarios</div>
+        {post.comments.map((c,i)=>(<div key={i} className="c"><b>{c.user}</b> {c.text}</div>))}
+      </div>
+      <div className="ig-time">{post.time}</div>
+      <div className="result-strip">
+        <div className="rs-num">{post.result.num === '×2' ? '×2' : <><em>{post.result.num}</em>{post.result.unit}</>}</div>
+        <div>
+          <span className="rs-mono">{post.result.label}</span>
+          <div className="rs-txt"><b>{post.result.txt}</b></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function Feed() { return <>{POSTS.map((p,i)=><Post key={i} post={p}/>)}</>; }
+ReactDOM.createRoot(document.getElementById('feed-root')).render(<Feed/>);
+</script>
+
+</body>
+</html>

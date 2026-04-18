@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=1440, initial-scale=1"/>
+<title>WhatsLoyalty · Vista Cliente</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+
+<style>
+  :root {
+    --paper: #F6F5F0; --paper2: #ECEAE1; --paper3: #E0DCCD;
+    --ink: #0A0F0C; --ink3: #3d4540; --ink4: #6b7570;
+    --line: #dcd9cc; --green: #00C851; --greenDeep: #00a843; --greenDark: #04200f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--paper); font-family: "Inter Tight", system-ui, sans-serif; color: var(--ink); min-height: 100vh; }
+  body { display: flex; flex-direction: column; }
+  .page { flex: 1; padding: 32px 24px 160px; }
+  .hdr { display: flex; align-items: center; justify-content: space-between; margin: 0 auto 18px; max-width: 1320px; }
+  .logo { display: flex; align-items: center; gap: 10px; }
+  .logo-mark { width: 30px; height: 30px; border-radius: 8px; background: var(--ink); color: var(--green); display: grid; place-items: center; font-weight: 700; font-size: 15px; }
+  .logo-word { font-family: "Instrument Serif"; font-size: 22px; letter-spacing: -.01em; }
+  .logo-word em { font-style: italic; color: var(--greenDeep); }
+  .pill { padding: 6px 12px; border-radius: 100px; font-family: "JetBrains Mono"; font-size: 10px; letter-spacing: .12em; background: var(--ink); color: var(--green); text-transform: uppercase; }
+
+  .canvas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px 28px; max-width: 1320px; margin: 0 auto; }
+  .phone-cell { display: flex; flex-direction: column; align-items: center; }
+  .phone-cell > .caption { margin-bottom: 14px; text-align: center; max-width: 360px; }
+  .caption .idx { font-family: "JetBrains Mono"; font-size: 11px; letter-spacing: .14em; color: var(--ink4); margin-bottom: 4px; }
+  .caption .ttl { font-family: "Instrument Serif"; font-size: 22px; letter-spacing: -.01em; }
+  .caption .ttl em { font-style: italic; color: var(--greenDeep); }
+  .caption .sub { font-size: 12px; color: var(--ink4); margin-top: 4px; line-height: 1.4; }
+
+  .phone-frame { width: 340px; height: 735px; border-radius: 48px; background: #0a0f0c; position: relative; padding: 10px; box-shadow: 0 30px 60px rgba(10,15,12,.18), 0 0 0 1.5px rgba(10,15,12,.1); }
+  .phone-screen { width: 100%; height: 100%; border-radius: 40px; overflow: hidden; position: relative; background: #fff; }
+  .phone-island { position: absolute; top: 19px; left: 50%; transform: translateX(-50%); width: 106px; height: 32px; border-radius: 24px; background: #000; z-index: 50; }
+
+  body.focus .canvas { grid-template-columns: 1fr; place-items: center; }
+  body.focus .phone-frame { width: 390px; height: 840px; }
+  body.focus .phone-cell .caption { display: none; }
+
+  .selector { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(246,245,240,.92); backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding: 12px 20px; display: flex; align-items: center; gap: 12px; z-index: 100; overflow-x: auto; white-space: nowrap; }
+  .selector-label { font-family: "JetBrains Mono"; font-size: 10px; letter-spacing: .14em; color: var(--ink4); text-transform: uppercase; flex-shrink: 0; }
+  .chip { padding: 8px 14px; border-radius: 100px; background: #fff; border: 1px solid var(--line); font-size: 12.5px; font-family: "Inter Tight"; font-weight: 500; color: var(--ink3); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .chip .num { font-family: "JetBrains Mono"; font-size: 10px; opacity: .7; }
+  .sel-right { margin-left: auto; display: flex; gap: 8px; flex-shrink: 0; }
+  .toggle { padding: 7px 12px; border-radius: 100px; background: #fff; border: 1px solid var(--line); font-size: 11.5px; font-weight: 500; color: var(--ink3); cursor: pointer; }
+  .toggle.on { background: var(--green); color: var(--greenDark); border-color: var(--green); }
+</style>
+</head>
+
+<body>
+
+<div class="page">
+  <div class="hdr">
+    <div class="logo">
+      <div class="logo-mark">W</div>
+      <div class="logo-word">Whats<em>Loyalty</em> · Vista cliente</div>
+    </div>
+    <div class="pill">● 6 pantallas · punto de vista del usuario</div>
+  </div>
+  <div id="canvas-root" class="canvas"></div>
+</div>
+
+<div class="selector" id="selector">
+  <span class="selector-label">Pantallas</span>
+  <div id="chips" style="display:flex; gap:8px;"></div>
+  <div class="sel-right">
+    <button class="toggle" id="focus-toggle">Vista individual</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="client-screens.jsx"></script>
+
+<script type="text/babel">
+const SCREENS = [
+  { id:'chatlist', label:'Notificación', num:'01', sub:'Lista de chats · llega el mensaje' },
+  { id:'welcome',  label:'Bienvenida',   num:'02', sub:'Primer chat · 50 pts de regalo' },
+  { id:'card',     label:'Mi carta',     num:'03', sub:'QR identitario · enseñar al camarero' },
+  { id:'visit2',   label:'2ª visita',    num:'04', sub:'Chat · puntos sumados en vivo' },
+  { id:'points',   label:'Mis puntos',   num:'05', sub:'Panel · saldo, premios, historial' },
+  { id:'redeemed', label:'Canje',        num:'06', sub:'Ticket · café canjeado con éxito' },
+];
+
+function App() {
+  const [screen, setScreen] = React.useState(localStorage.getItem('wl_client_screen') || 'all');
+  React.useEffect(() => { localStorage.setItem('wl_client_screen', screen); }, [screen]);
+
+  const renderScreen = (id) => {
+    switch (id) {
+      case 'chatlist': return <ChatListScreen/>;
+      case 'welcome':  return <WelcomeChatScreen/>;
+      case 'card':     return <MyCardScreen/>;
+      case 'visit2':   return <SecondVisitScreen/>;
+      case 'points':   return <MyPointsScreen/>;
+      case 'redeemed': return <RedeemedScreen/>;
+    }
+  };
+
+  const list = screen === 'all' ? SCREENS.map(s=>s.id) : [screen];
+  const focusMode = screen !== 'all';
+
+  React.useEffect(() => {
+    document.body.classList.toggle('focus', focusMode);
+    const ft = document.getElementById('focus-toggle');
+    ft.classList.toggle('on', focusMode);
+    ft.textContent = focusMode ? 'Ver todas' : 'Vista individual';
+  }, [focusMode]);
+
+  React.useEffect(() => {
+    const chips = document.getElementById('chips');
+    chips.innerHTML = '';
+    const all = document.createElement('button');
+    all.className = 'chip' + (screen === 'all' ? ' on' : '');
+    all.innerHTML = '<span class="num">★</span> Ver todas';
+    all.onclick = () => setScreen('all');
+    chips.appendChild(all);
+    SCREENS.forEach(s => {
+      const c = document.createElement('button');
+      c.className = 'chip' + (screen === s.id ? ' on' : '');
+      c.innerHTML = `<span class="num">${s.num}</span> ${s.label}`;
+      c.onclick = () => setScreen(s.id);
+      chips.appendChild(c);
+    });
+  }, [screen]);
+
+  return (
+    <>
+      {list.map(id => {
+        const meta = SCREENS.find(s => s.id === id);
+        return (
+          <div key={id} className="phone-cell" data-screen-label={meta.num + ' ' + meta.label}>
+            <div className="caption">
+              <div className="idx">{meta.num} · {meta.label.toUpperCase()}</div>
+              <div className="ttl">{meta.sub.split(' · ')[0]}</div>
+              <div className="sub">{meta.sub.split(' · ').slice(1).join(' · ')}</div>
+            </div>
+            <div className="phone-frame">
+              <div className="phone-island"/>
+              <div className="phone-screen">{renderScreen(id)}</div>
+            </div>
+          </div>
+        );
+      })}
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('canvas-root')).render(<App/>);
+</script>
+
+</body>
+</html>
