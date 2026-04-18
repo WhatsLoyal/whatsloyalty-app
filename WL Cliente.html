@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Mi tarjeta · WhatsLoyalty</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif&family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="wl-config.js"></script>
+<script src="wl-data.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  :root{--paper:#F6F5F0;--paper2:#ECEAE1;--paper3:#E0DCCD;--ink:#0A0F0C;--ink3:#3d4540;--ink4:#6b7570;--line:#dcd9cc;--green:#00C851;--greenDeep:#00a843;--wa:#25D366}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased;height:100%}
+  .serif{font-family:'Instrument Serif',serif}
+  .mono{font-family:'JetBrains Mono',monospace}
+  button{font:inherit;cursor:pointer;background:none;border:none;color:inherit}
+
+  @media(min-width:680px){
+    body{background:#e5e3d8;display:flex;align-items:center;justify-content:center;padding:32px 20px;min-height:100vh}
+    .frame{width:400px;height:820px;border-radius:44px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.15),0 0 0 8px #111,0 0 0 10px #333;position:relative;display:flex;flex-direction:column;background:var(--paper)}
+    .back-home{position:fixed;top:24px;left:24px;padding:8px 14px;border:1px solid #bfbdaf;border-radius:8px;font-size:12px;background:#f6f5f0;color:#3d4540}
+    .biz-switch{position:fixed;top:24px;right:24px;padding:8px 12px 8px 8px;border:1px solid #bfbdaf;border-radius:8px;font-size:12px;background:#f6f5f0;display:flex;gap:8px;align-items:center}
+    .biz-switch select{border:none;background:transparent;font:inherit;font-weight:600;cursor:pointer;outline:none}
+    .wa-label{position:absolute;top:-28px;left:0;right:0;text-align:center;font-size:11px;color:#6b7570;letter-spacing:.08em;text-transform:uppercase}
+  }
+  @media(max-width:679px){
+    .frame{width:100%;min-height:100vh;display:flex;flex-direction:column}
+    .back-home,.biz-switch,.wa-label{display:none}
+  }
+
+  /* WhatsApp-style top bar */
+  .wbar{background:#075E54;color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px;font-size:14px}
+  .wbar-avatar{width:34px;height:34px;border-radius:50%;background:#fff;color:var(--ink);display:grid;place-items:center;font-weight:700;font-size:14px}
+  .wbar-name{font-weight:600}
+  .wbar-sub{font-size:11px;opacity:.8}
+  .wbar-close{margin-left:auto;font-size:20px;opacity:.8;padding:4px 8px}
+
+  .hero{background:var(--ink);color:var(--paper);padding:28px 24px 32px;position:relative;overflow:hidden}
+  .hero::after{content:"";position:absolute;top:-40px;right:-40px;width:160px;height:160px;background:radial-gradient(circle,rgba(0,200,81,.3),transparent 70%);border-radius:50%}
+  .hero-head{display:flex;align-items:center;gap:12px;margin-bottom:24px;position:relative}
+  .hero-mark{width:40px;height:40px;border-radius:10px;background:rgba(255,255,255,.08);display:grid;place-items:center;font-weight:700;font-size:16px;letter-spacing:-.02em}
+  .hero-biz-name{font-size:15px;font-weight:600}
+  .hero-biz-sub{font-size:11px;opacity:.6}
+  .hero-welcome{font-size:13px;opacity:.6;margin-bottom:6px}
+  .hero-name{font-family:'Instrument Serif',serif;font-size:34px;letter-spacing:-.02em;line-height:1;margin-bottom:22px}
+  .bal-row{display:flex;align-items:end;justify-content:space-between;gap:16px}
+  .bal-big{font-family:'Instrument Serif',serif;font-size:76px;line-height:.85;letter-spacing:-.03em}
+  .bal-cur{font-size:12px;text-transform:uppercase;letter-spacing:.1em;opacity:.6;margin-bottom:14px}
+  .bal-meta{text-align:right;font-size:11px;opacity:.6;padding-bottom:6px}
+  .bal-meta b{color:var(--paper);opacity:1;font-weight:600}
+
+  .body{flex:1;overflow-y:auto;padding:16px}
+
+  .section-t{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink4);margin:0 4px 10px;display:flex;justify-content:space-between;align-items:baseline}
+
+  /* next reward progress */
+  .next-reward{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+  .nr-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+  .nr-name{font-size:14px;font-weight:500;flex:1;min-width:0}
+  .nr-cost{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink4);white-space:nowrap;flex-shrink:0}
+  .nr-bar{height:6px;background:var(--paper2);border-radius:3px;overflow:hidden;margin-bottom:8px}
+  .nr-fill{height:100%;background:var(--ink);border-radius:3px;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+  .nr-sub{font-size:11px;color:var(--ink4)}
+
+  /* reward cards */
+  .rewards{display:flex;flex-direction:column;gap:8px;margin-bottom:16px}
+  .rw{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+  .rw.ready{border-color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+  .rw-ico{width:40px;height:40px;border-radius:10px;background:var(--paper2);display:grid;place-items:center;font-size:19px}
+  .rw-n{font-size:14px;font-weight:500}
+  .rw-c{font-size:11px;color:var(--ink4);margin-top:2px}
+  .rw-pill{font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 8px;border-radius:5px;background:var(--paper2);color:var(--ink3);white-space:nowrap;flex-shrink:0}
+  .rw-pill.ready{background:var(--ink);color:var(--paper)}
+
+  /* specials */
+  .special{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:12px;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;cursor:pointer}
+  .special:active{background:var(--paper2)}
+  .special.live{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+  .special-ico{width:48px;height:48px;border-radius:12px;background:var(--paper2);display:grid;place-items:center;font-size:24px}
+  .special.live .special-ico{background:rgba(255,255,255,.12)}
+  .special-t{font-size:14px;font-weight:600}
+  .special-s{font-size:11px;color:var(--ink4);margin-top:3px;line-height:1.4}
+  .special.live .special-s{color:rgba(255,255,255,.7)}
+  .special-arr{font-size:18px;opacity:.5}
+
+  /* activity */
+  .tx{display:grid;grid-template-columns:auto 1fr auto;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+  .tx:last-child{border:none}
+  .tx-ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:13px;background:var(--paper2)}
+  .tx-ico.sale{background:#d9f5e3;color:var(--greenDeep)}
+  .tx-ico.redeem{background:#fff2d9;color:#b77c0d}
+  .tx-ico.welcome{background:#dbe9ff;color:#2860c7}
+  .tx-n{font-size:13px;font-weight:500}
+  .tx-s{font-size:11px;color:var(--ink4);margin-top:2px}
+  .tx-p{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;text-align:right}
+  .tx-p.pos{color:var(--greenDeep)}.tx-p.neg{color:#b77c0d}
+
+  /* Modal (scratch / spin / review) */
+  .modal{position:fixed;inset:0;background:rgba(10,15,12,.82);display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
+  .modal.on{display:flex}
+  .modal-card{background:var(--paper);border-radius:20px;padding:28px 24px;max-width:360px;width:100%;text-align:center}
+  .modal-card h2{font-family:'Instrument Serif',serif;font-size:32px;margin-bottom:10px;letter-spacing:-.01em}
+  .modal-card p{font-size:13px;color:var(--ink4);line-height:1.5;margin-bottom:20px}
+  .modal-close{position:absolute;top:24px;right:24px;font-size:24px;color:#fff;opacity:.7;padding:8px;z-index:101}
+
+  /* scratch card */
+  .scratch-wrap{position:relative;width:100%;aspect-ratio:16/10;margin-bottom:18px;border-radius:16px;overflow:hidden;background:linear-gradient(135deg,#ffcd3c,#ffa500)}
+  .scratch-prize{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px}
+  .scratch-prize .emoji{font-size:48px;margin-bottom:8px}
+  .scratch-prize .label{font-family:'Instrument Serif',serif;font-size:26px;line-height:1;letter-spacing:-.01em}
+  .scratch-cover{position:absolute;inset:0;background:#555;color:#fff;display:grid;place-items:center;cursor:grab;user-select:none;background-image:repeating-linear-gradient(45deg,#555 0,#555 8px,#666 8px,#666 16px)}
+  .scratch-cover.revealing{animation:reveal .6s forwards}
+  @keyframes reveal{to{opacity:0;transform:scale(.95)}}
+  .scratch-cover-inner{text-align:center}
+  .scratch-cover-inner .big{font-size:24px;font-weight:700;margin-bottom:4px}
+  .scratch-cover-inner .small{font-size:11px;opacity:.8}
+
+  /* Spin wheel */
+  .spin-wrap{position:relative;width:240px;height:240px;margin:0 auto 24px}
+  .spin-arrow{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:20px solid var(--ink);z-index:5}
+  .spin-disc{width:100%;height:100%;border-radius:50%;transition:transform 4s cubic-bezier(.17,.67,.3,1.01);box-shadow:0 8px 24px rgba(0,0,0,.12)}
+
+  /* review prompt */
+  .stars{font-size:38px;color:#ffc107;margin:14px 0 18px;letter-spacing:6px}
+  .btn-primary{width:100%;padding:14px;background:var(--ink);color:var(--paper);border-radius:10px;font-weight:600;font-size:14px}
+  .btn-wa{width:100%;padding:14px;background:var(--wa);color:#fff;border-radius:10px;font-weight:600;font-size:14px;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn-secondary{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;font-weight:500;font-size:13px;color:var(--ink4);background:#fff;margin-top:8px}
+
+  /* toast */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:14px 22px;border-radius:12px;font-size:14px;font-weight:500;box-shadow:0 8px 32px rgba(0,0,0,.18);opacity:0;pointer-events:none;transition:all .3s;z-index:150}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(-6px)}
+
+  /* footer */
+  .foot{padding:20px 16px 28px;text-align:center;font-size:10px;color:var(--ink4);letter-spacing:.05em}
+  .foot a{color:var(--ink3);border-bottom:1px solid var(--line)}
+</style>
+</head>
+<body>
+
+<button class="back-home" onclick="location.href='WhatsLoyalty Live.html'">← Inicio</button>
+<div class="biz-switch">
+  <span style="color:#6b7570">Negocio:</span>
+  <select id="bizPick"></select>
+</div>
+
+<div class="frame">
+  <div class="wa-label">Desde el link del WhatsApp</div>
+
+  <!-- WhatsApp context bar -->
+  <div class="wbar">
+    <div class="wbar-avatar" id="waInitial">P</div>
+    <div>
+      <div class="wbar-name" id="waName">—</div>
+      <div class="wbar-sub">chat · hace 2 min</div>
+    </div>
+    <div class="wbar-close">×</div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-head">
+      <div class="hero-mark" id="hMark">P</div>
+      <div><div class="hero-biz-name" id="hBizName">—</div><div class="hero-biz-sub" id="hBizSub">—</div></div>
+    </div>
+    <div class="hero-welcome">Hola,</div>
+    <div class="hero-name" id="hName">—</div>
+    <div class="bal-row">
+      <div>
+        <div class="bal-big" id="hBal">0</div>
+        <div class="bal-cur" id="hCur">puntos</div>
+      </div>
+      <div class="bal-meta">
+        <div><b id="hVisits">0</b> visitas</div>
+        <div><b id="hGastado">0 €</b> gastado</div>
+      </div>
+    </div>
+    <button id="myQrBtn" onclick="openMyQR()" style="margin-top:18px;width:100%;padding:12px;background:rgba(255,255,255,.10);color:var(--paper);border:1px solid rgba(255,255,255,.18);border-radius:10px;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:10px;position:relative;z-index:1">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3zM14 20h3M20 14h1"/></svg>
+      Mostrar mi código al staff
+    </button>
+  </div>
+
+  <div class="body">
+    <!-- specials: scratch, spin, review -->
+    <div id="specials"></div>
+
+    <!-- next reward -->
+    <div id="nextReward"></div>
+
+    <!-- rewards -->
+    <div class="section-t" id="rewardsLabel">Premios disponibles</div>
+    <div class="rewards" id="rewards"></div>
+
+    <!-- activity -->
+    <div class="section-t">Mi actividad</div>
+    <div id="activity"></div>
+
+    <div class="foot">WhatsLoyalty · tus datos no salen de este negocio · <a href="#">baja</a></div>
+  </div>
+</div>
+
+<!-- Scratch modal -->
+<div class="modal" id="mScratch">
+  <button class="modal-close" onclick="closeModal()">×</button>
+  <div class="modal-card">
+    <h2>Rasca de bienvenida</h2>
+    <p>Un regalo solo por darte de alta. Rasca para descubrirlo.</p>
+    <div class="scratch-wrap">
+      <div class="scratch-prize" id="scratchPrize">
+        <div><div class="emoji" id="spEmoji">🎁</div><div class="label" id="spLabel">—</div></div>
+      </div>
+      <div class="scratch-cover" id="scratchCover" onclick="revealScratch()">
+        <div class="scratch-cover-inner"><div class="big">RASCA</div><div class="small">Toca para descubrir</div></div>
+      </div>
+    </div>
+    <button class="btn-primary" id="scratchOk" onclick="closeModal()" style="display:none">Genial</button>
+  </div>
+</div>
+
+<!-- Spin modal -->
+<div class="modal" id="mSpin">
+  <button class="modal-close" onclick="closeModal()">×</button>
+  <div class="modal-card">
+    <h2>Ruleta de la casa</h2>
+    <p id="spinSub">Gira la ruleta. Cada 5 visitas te toca un giro.</p>
+    <div class="spin-wrap">
+      <div class="spin-arrow"></div>
+      <svg class="spin-disc" id="spinDisc" viewBox="0 0 200 200"></svg>
+    </div>
+    <div id="spinResult" style="min-height:28px;margin-bottom:12px;font-family:'Instrument Serif',serif;font-size:22px;letter-spacing:-.01em"></div>
+    <button class="btn-primary" id="spinBtn" onclick="doSpin()">Girar</button>
+  </div>
+</div>
+
+<!-- Review modal -->
+<div class="modal" id="mReview">
+  <button class="modal-close" onclick="closeModal()">×</button>
+  <div class="modal-card">
+    <h2>¡Disfruta tu canje!</h2>
+    <p>Si te ha gustado el sitio, ¿nos dejas una reseña en Google? Te regalamos <b>+20 puntos</b>.</p>
+    <div class="stars">★★★★★</div>
+    <button class="btn-primary" onclick="doReview()">Dejar reseña en Google</button>
+    <button class="btn-secondary" onclick="closeModal()">Quizá más tarde</button>
+  </div>
+</div>
+
+<!-- My QR modal -->
+<div class="modal" id="mQR">
+  <button class="modal-close" onclick="closeModal()">×</button>
+  <div class="modal-card" style="max-width:340px">
+    <h2 style="margin-bottom:4px">Mi código</h2>
+    <p style="margin-bottom:18px">Enséñalo en caja para sumar puntos o canjear.</p>
+    <div id="qrBox" style="width:240px;height:240px;margin:0 auto 18px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;display:grid;place-items:center"></div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink4);letter-spacing:.1em" id="qrLabel">—</div>
+    <div style="margin-top:14px;font-size:11px;color:var(--ink4)">Brilla la pantalla al máximo 🔆</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- QR lib (fallback: try jsdelivr, then unpkg) -->
+<script>
+(function loadQR(){
+  const urls = [
+    'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js',
+    'https://unpkg.com/qrcode-generator@1.4.4/qrcode.js',
+  ];
+  let i = 0;
+  function tryNext(){
+    if (i >= urls.length) return;
+    const s = document.createElement('script');
+    s.src = urls[i++];
+    s.onerror = tryNext;
+    document.head.appendChild(s);
+  }
+  tryNext();
+})();
+</script>
+
+<script>
+(async function(){
+  WL.db.init();
+  const bizId = WL.urlParam('b') || 'polka';
+  let b = WL.getBusiness(bizId);
+  // pick a customer: ?c=<id> or first in list (for demo)
+  const paramC = WL.urlParam('c');
+  let allCustomers = WL.db.getCustomers(b.id);
+  let c = paramC ? WL.db.getCustomer(b.id, paramC) : null;
+
+  // Si hay ?c= y no está local (cliente recién creado), esperamos al servidor
+  if (paramC && !c && !WL.CONFIG.DEMO_MODE && WL.CONFIG.APPS_SCRIPT_URL) {
+    try {
+      await WL.db._refreshFromServer();
+      allCustomers = WL.db.getCustomers(b.id);
+      c = WL.db.getCustomer(b.id, paramC);
+    } catch (e) { console.warn('[WL Cliente] refresh failed', e); }
+  }
+
+  // pick one with nice activity for demo
+  if (!c) c = allCustomers.find(x => x.visits >= 3) || allCustomers[0];
+
+  // biz switch
+  const pick = document.getElementById('bizPick');
+  pick.innerHTML = WL.BUSINESSES.map(bb => `<option value="${bb.id}" ${bb.id===b.id?'selected':''}>${bb.name}</option>`).join('');
+  pick.onchange = () => location.href = 'WL Cliente.html?b=' + pick.value;
+
+  document.getElementById('waInitial').textContent = b.name[0];
+  document.getElementById('waName').textContent = b.name;
+  document.getElementById('hMark').textContent = b.name[0];
+  document.getElementById('hBizName').textContent = b.name;
+  document.getElementById('hBizSub').textContent = b.tagline;
+
+  render();
+  WL.db.onChange(render);
+
+  function render() {
+    c = WL.db.getCustomer(b.id, c.id);
+    document.getElementById('hName').textContent = `${c.name} ${c.surname}`;
+    document.getElementById('hBal').textContent = c.balance;
+    document.getElementById('hCur').textContent = b.currency;
+    document.getElementById('hVisits').textContent = c.visits;
+    document.getElementById('hGastado').textContent = WL.fmt.money(c.total_spent);
+
+    // Specials
+    const specials = [];
+    if (!c.scratch_used) specials.push(`
+      <div class="special live" onclick="openScratch()">
+        <div class="special-ico">🎫</div>
+        <div><div class="special-t">Tu rasca de bienvenida</div><div class="special-s">Ráscalo antes de que caduque · regalo asegurado</div></div>
+        <div class="special-arr">›</div>
+      </div>`);
+    if (b.spin_every && c.spins_available > 0) specials.push(`
+      <div class="special live" onclick="openSpin()">
+        <div class="special-ico">🎡</div>
+        <div><div class="special-t">Ruleta disponible × ${c.spins_available}</div><div class="special-s">Cada ${b.spin_every} visitas te toca un giro</div></div>
+        <div class="special-arr">›</div>
+      </div>`);
+    if (c.reviews_asked && !c.reviews_left) specials.push(`
+      <div class="special" onclick="openReview()">
+        <div class="special-ico">⭐</div>
+        <div><div class="special-t">Deja reseña Google</div><div class="special-s">Te damos +20 ${b.currency} por tu reseña</div></div>
+        <div class="special-arr">›</div>
+      </div>`);
+    document.getElementById('specials').innerHTML = specials.join('');
+
+    // Next reward
+    const affordable = b.rewards.filter(r => r.cost > 0);
+    const nextR = affordable.find(r => r.cost > c.balance) || affordable[affordable.length-1];
+    if (nextR && nextR.cost > c.balance) {
+      const pct = Math.min(100, (c.balance / nextR.cost) * 100);
+      document.getElementById('nextReward').innerHTML = `
+        <div class="section-t">Próximo premio</div>
+        <div class="next-reward">
+          <div class="nr-head"><div class="nr-name">${nextR.icon} ${nextR.name}</div><div class="nr-cost">${c.balance}/${nextR.cost}</div></div>
+          <div class="nr-bar"><div class="nr-fill" style="width:${pct}%"></div></div>
+          <div class="nr-sub">Te faltan <b style="color:var(--ink)">${nextR.cost - c.balance} ${b.currency}</b></div>
+        </div>`;
+    } else {
+      document.getElementById('nextReward').innerHTML = '';
+    }
+
+    // Rewards list
+    document.getElementById('rewards').innerHTML = b.rewards.map(r => {
+      const ready = r.cost > 0 && c.balance >= r.cost;
+      return `<div class="rw ${ready?'ready':''}">
+        <div class="rw-ico">${r.icon}</div>
+        <div><div class="rw-n">${r.name}</div><div class="rw-c">${r.cost ? r.cost + ' ' + b.currency : 'Automático'}${r.auto?' · se activa solo':''}</div></div>
+        <div class="rw-pill ${ready?'ready':''}">${ready ? 'CANJEAR' : (r.auto?'AUTO':(r.cost+' '+b.currency))}</div>
+      </div>`;
+    }).join('');
+
+    // Activity
+    const last = c.transactions.slice().reverse().slice(0, 8);
+    const typeIco = { sale:'€', redeem:'🎁', welcome:'👋', spin:'🎡', scratch:'🎫', review:'⭐' };
+    document.getElementById('activity').innerHTML = last.map(t => `
+      <div class="tx">
+        <div class="tx-ico ${t.type}">${typeIco[t.type]||'·'}</div>
+        <div><div class="tx-n">${t.note || t.type}</div><div class="tx-s">${WL.fmt.ago(t.created_at)}${t.amount?` · ${WL.fmt.money(t.amount)}`:''}</div></div>
+        <div class="tx-p ${t.points>0?'pos':(t.points<0?'neg':'')}">${t.points>0?'+':''}${t.points||'—'}</div>
+      </div>`).join('');
+  }
+
+  // Scratch flow
+  let curScratchPrize = null;
+  window.openScratch = function() {
+    curScratchPrize = WL.pickScratchPrize();
+    document.getElementById('spEmoji').textContent = curScratchPrize.type === 'points' ? '⭐' : '🎁';
+    document.getElementById('spLabel').textContent = curScratchPrize.label;
+    document.getElementById('scratchCover').classList.remove('revealing');
+    document.getElementById('scratchCover').style.display = '';
+    document.getElementById('scratchOk').style.display = 'none';
+    document.getElementById('mScratch').classList.add('on');
+  };
+  window.revealScratch = function() {
+    const cover = document.getElementById('scratchCover');
+    cover.classList.add('revealing');
+    setTimeout(() => {
+      cover.style.display = 'none';
+      document.getElementById('scratchOk').style.display = '';
+      WL.db.applyScratch(b.id, c.id, curScratchPrize);
+      toast(curScratchPrize.type === 'points' ? `¡${curScratchPrize.label}!` : `¡${curScratchPrize.label}!`);
+    }, 600);
+  };
+
+  // Spin flow
+  window.openSpin = function() {
+    const prizes = b.spin_prizes;
+    const disc = document.getElementById('spinDisc');
+    const n = prizes.length;
+    const slice = 360 / n;
+    const cols = ['#F6F5F0','#ECEAE1','#E0DCCD','#F6F5F0','#ECEAE1','#E0DCCD'];
+    let svg = '';
+    for (let i = 0; i < n; i++) {
+      const a1 = (i * slice - 90) * Math.PI / 180;
+      const a2 = ((i+1) * slice - 90) * Math.PI / 180;
+      const x1 = 100 + 100 * Math.cos(a1);
+      const y1 = 100 + 100 * Math.sin(a1);
+      const x2 = 100 + 100 * Math.cos(a2);
+      const y2 = 100 + 100 * Math.sin(a2);
+      svg += `<path d="M100,100 L${x1},${y1} A100,100 0 0,1 ${x2},${y2} Z" fill="${cols[i%cols.length]}" stroke="#dcd9cc" stroke-width="1"/>`;
+      const ta = (i * slice + slice/2 - 90) * Math.PI / 180;
+      const tx = 100 + 60 * Math.cos(ta);
+      const ty = 100 + 60 * Math.sin(ta);
+      const rotDeg = i * slice + slice/2;
+      svg += `<text x="${tx}" y="${ty}" text-anchor="middle" alignment-baseline="middle" font-family="Inter" font-size="10" font-weight="600" fill="#0A0F0C" transform="rotate(${rotDeg},${tx},${ty})">${prizes[i].label}</text>`;
+    }
+    svg += `<circle cx="100" cy="100" r="14" fill="#0A0F0C"/>`;
+    disc.innerHTML = svg;
+    disc.style.transform = 'rotate(0deg)';
+    document.getElementById('spinResult').textContent = '';
+    document.getElementById('spinBtn').style.display = '';
+    document.getElementById('spinBtn').textContent = 'Girar';
+    document.getElementById('mSpin').classList.add('on');
+  };
+  window.doSpin = function() {
+    const prizes = b.spin_prizes;
+    const n = prizes.length;
+    const idx = Math.floor(Math.random() * n);
+    const slice = 360 / n;
+    const rot = 360 * 5 + (360 - (idx * slice + slice/2));
+    const disc = document.getElementById('spinDisc');
+    disc.style.transform = `rotate(${rot}deg)`;
+    document.getElementById('spinBtn').style.display = 'none';
+    setTimeout(() => {
+      const prize = prizes[idx];
+      WL.db.applySpin(b.id, c.id, prize);
+      document.getElementById('spinResult').textContent = `¡${prize.label}!`;
+      setTimeout(() => { closeModal(); toast(`Ruleta: ${prize.label}`); }, 1600);
+    }, 4100);
+  };
+
+  // Review flow
+  window.openReview = function() { document.getElementById('mReview').classList.add('on'); };
+  window.doReview = function() {
+    WL.db.markReviewLeft(b.id, c.id);
+    closeModal();
+    toast('+20 pts · gracias por la reseña');
+  };
+
+  // My QR — identidad del cliente, legible por la Staff App
+  window.openMyQR = function() {
+    const payload = `wl:${b.id}:${c.id}`;
+    const box = document.getElementById('qrBox');
+    if (window.qrcode) {
+      try {
+        const qr = qrcode(0, 'M');
+        qr.addData(payload);
+        qr.make();
+        // SVG output sized to fill the box
+        box.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true });
+        const svg = box.querySelector('svg');
+        if (svg) { svg.style.width = '100%'; svg.style.height = '100%'; svg.setAttribute('shape-rendering','crispEdges'); }
+      } catch(e) {
+        box.innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#b77c0d;padding:20px">Error generando QR<br><span style="color:var(--ink4)">${e.message}</span></div>`;
+      }
+    } else {
+      // library still loading — show payload as fallback
+      box.innerHTML = `<div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--ink3);padding:20px;word-break:break-all">${payload}</div>`;
+    }
+    document.getElementById('qrLabel').textContent = `${c.phone.replace(/\s/g,'')} · ${c.id.slice(-6)}`;
+    document.getElementById('mQR').classList.add('on');
+  };
+
+  window.closeModal = function() {
+    document.querySelectorAll('.modal').forEach(m => m.classList.remove('on'));
+  };
+
+  // Toast
+  const toastEl = document.getElementById('toast');
+  let tT = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('on');
+    clearTimeout(tT);
+    tT = setTimeout(() => toastEl.classList.remove('on'), 2400);
+  }
+})();
+</script>
+</body>
+</html>
