@@ -6,7 +6,7 @@ window.WL = window.WL || {};
 
 WL.CONFIG = {
   SHEET_ID: '1xfrCxVtNkywVZWeQUH5VK6LPv-bOs9qeS6fRqwOpS0E',
-  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw6NVcEFM6Gqzm08ks2EuEj4Eq8TpZ3wSDPvpBSwPsFg4bdiBvZq5NS3pyJACLHeuv2Cw/exec',
+  APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwNC8SRldaFHZ1UMnLoNKVhTRLK7EnNQnQXv-GjkE6CvIeAVn0KD1G__6TU7HYp7_TDmw/exec',
   SHARED_SECRET: 'patata-caliente-27',
   DEMO_MODE: false,  // ← true = localStorage local · false = Google Sheet real
 };
